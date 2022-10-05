@@ -12,8 +12,14 @@
 ##### &emsp; Make the grid 3x3
 ##### &emsp; To make the grid borders use the bootstrap class border-dark
 ##### &emsp; Make the button (Restart) and Undo(takes one turn back)
+##### &emsp; Will have a turn indicator under the header to show which turn.
 ##### &emsp;
 ### Javascript
 ####  Grid square
 ##### &emsp; Will be 9 of them in a 2D array
-##### &emsp; 
+##### &emsp; Maybe an object or class.
+##### Properties
+##### &emsp; Position: a two positon string IE TopMid, MidMid, BotRight, TopRight
+##### &emsp; Coords: Will be the postion in the 2D array
+##### &emsp; state: Is the value in the square IE 'X' 'O' or ''. Helps display the insides of the square
+##### &emsp; clickable: A boolean determinng if a player can place a character
