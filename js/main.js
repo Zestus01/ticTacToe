@@ -31,12 +31,16 @@ function createGrid(){
 }
 
 function createBtn(){
+    let btnDiv = document.createElement('div');
+    btnDiv.className = 'd-flex justify-content-center';
+    btnDiv.id = 'btnDiv';
     let btn = document.createElement('button');
     btn.id = 'reset';
-    btn.className = 'justify-content-center text-center btn btn-outline-success';
+    btn.className = 'text-center btn btn-outline-success';
     btn.innerText = 'Reset Game?';
     btn.addEventListener('click', () => resetBoard());
-    htmlBody.appendChild(btn);
+    htmlBody.appendChild(btnDiv);
+    btnDiv.appendChild(btn);
 }
 function resetBoard(){
     ;
