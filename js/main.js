@@ -45,7 +45,7 @@ function createHeader(){
 
 function createGrid(){
     let grid = document.createElement('div');
-    grid.className = ' container border border-dark d-flex justify-content-center text-center row';
+    grid.className = ' container-fluid border border-dark d-flex justify-content-center text-center row';
     grid.id = 'gridSystem';
     htmlBody.appendChild(grid);
     createTopRow();
@@ -84,7 +84,7 @@ function squareClick(){
 }
 
 function checkVictory(gridSquare){
-
+    
 
 }
 function createTopRow(){
