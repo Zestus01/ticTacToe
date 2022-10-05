@@ -1,18 +1,25 @@
 let htmlBody = document.getElementById('app');
 
-let gameState = {
-    gridSystem: [[]],
+const gameState = {
+    gridSystem: [
+        [],
+        [],
+        [],
+    ],
     turnOrder: true,
     playerX: '',
     playerO: '',
 }
 
 class Grid{
-    constructor(coords, position){
-        this.coords = coords;
+    constructor(coordX, cordY, position, check){
+        this.coordX = coordX;
+        this.cordY = cordY;
         this.positon = position;
         this.clickable = true;
         this.char = '';
+        this.check = check;
+        this.gridID = `${coordX}${cordY}`;
     }
 }
 
@@ -36,8 +43,55 @@ function createHeader(){
 
 function createGrid(){
     let grid = document.createElement('div');
-    grid.className = 'border-dark d-flex justify-content-center text-center';
+    grid.className = ' container border border-dark d-flex justify-content-center text-center row';
+    grid.id = 'gridSystem';
     htmlBody.appendChild(grid);
+    createTopRow();
+    createMidRow();
+    createBotRow();
+    for(let row = 0; row < 3; row++){
+        for(let col = 0; col < 3; col++){
+            let gridSquare = document.createElement('div');
+            gridSquare.className = 'd-flex justify-content-center text-center grid border border-dark col-4';
+            gridSquare.id = `${row}${col}`;
+            gridSquare.textContent = `${row}${col}`;
+            gridSquare.addEventListener('click', () => squareClick(gridSquare.id));
+            grid.appendChild(gridSquare);
+        }
+    }
+}
+
+function squareClick(id){
+    let gridSquare = document.getElementById(id);
+    gridSquare.className = 'd-flex justify-content-center text-center border border-dark col-4';
+    alert(`This square got clicked ${id}`);
+}
+
+function createTopRow(){
+    let grid00 = new Grid(0, 0, 'topLeft', 'corner');
+    gameState.gridSystem[0].push(grid00);
+    let grid01 = new Grid(0, 1, 'topMid', 'edge');
+    gameState.gridSystem[0].push(grid01);
+    let grid02 = new Grid(0, 2, 'topRight', 'corner');
+    gameState.gridSystem[0].push(grid02);
+}
+
+function createMidRow(){
+    let grid10 = new Grid(1, 0, 'midLeft', 'edge');
+    gameState.gridSystem[1].push(grid10);
+    let grid11 = new Grid(1, 1, 'midMid', 'mid');
+    gameState.gridSystem[1].push(grid11);
+    let grid12 = new Grid(1, 2, 'midRight', 'edge');
+    gameState.gridSystem[1].push(grid12);
+}
+
+function createBotRow(){
+    let grid20 = new Grid(2, 0, 'botLeft', 'corner');
+    gameState.gridSystem[2].push(grid20);
+    let grid21 = new Grid(2, 1, 'botMid', 'edge');
+    gameState.gridSystem[2].push(grid21);
+    let grid22 = new Grid(2, 2, 'botRight', 'corner');
+    gameState.gridSystem[2].push(grid22);
 }
 
 function createBtn(){
