@@ -10,6 +10,7 @@ const gameState = {
     playerX: '',
     playerO: '',
     numTurns: 0,
+    victoryBool: false,
 }
 
 class Grid{
@@ -45,7 +46,7 @@ function createHeader(){
 
 function createGrid(){
     let grid = document.createElement('div');
-    grid.className = ' container-fluid border border-dark d-flex justify-content-center text-center row';
+    grid.className = 'm-2 container-fluid border border-dark d-flex justify-content-center text-center row col-12';
     grid.id = 'gridSystem';
     htmlBody.appendChild(grid);
     createTopRow();
@@ -84,34 +85,58 @@ function squareClick(){
 }
 
 function checkVictory(gridSquare){
-    
-
+    switch (gridSquare.position){
+            case 'edge':{
+                if(checkRow(gridSquare)){
+                    return;
+                }
+                checkCol(gridSquare);
+                break;
+            }
+            case 'corner':
+                if(checkRow(gridSquare)){
+                    return;
+                }
+                if(checkCol(gridSquare)){
+                    return;
+                }
+                checkDiag(gridSquare);
+                break;
+            case 'mid':
+                if(checkRow(gridSquare)){
+                    return;
+                }
+                if(checkCol(gridSquare)){
+                    return;
+                }
+                checkMidDiag(gridSquare);
+    }
 }
 function createTopRow(){
     let grid00 = new Grid(0, 0, 'topLeft', 'corner');
-    gameState.gridSystem[0].push(grid00);
+    gameState.gridSystem[0][0] = grid00;
     let grid01 = new Grid(0, 1, 'topMid', 'edge');
-    gameState.gridSystem[0].push(grid01);
+    gameState.gridSystem[0][1] = grid01;
     let grid02 = new Grid(0, 2, 'topRight', 'corner');
-    gameState.gridSystem[0].push(grid02);
+    gameState.gridSystem[0][2] = grid02;
 }
 
 function createMidRow(){
     let grid10 = new Grid(1, 0, 'midLeft', 'edge');
-    gameState.gridSystem[1].push(grid10);
+    gameState.gridSystem[1][0] = grid10;
     let grid11 = new Grid(1, 1, 'midMid', 'mid');
-    gameState.gridSystem[1].push(grid11);
+    gameState.gridSystem[1][1] = grid11;
     let grid12 = new Grid(1, 2, 'midRight', 'edge');
-    gameState.gridSystem[1].push(grid12);
+    gameState.gridSystem[1][2] = grid12;
 }
 
 function createBotRow(){
     let grid20 = new Grid(2, 0, 'botLeft', 'corner');
-    gameState.gridSystem[2].push(grid20);
+    gameState.gridSystem[2][0] = grid20;
     let grid21 = new Grid(2, 1, 'botMid', 'edge');
-    gameState.gridSystem[2].push(grid21);
+    gameState.gridSystem[2][1] = grid21;
     let grid22 = new Grid(2, 2, 'botRight', 'corner');
-    gameState.gridSystem[2].push(grid22);
+    gameState.gridSystem[2][2] = grid22;
 }
 
 function createBtn(){
@@ -120,24 +145,30 @@ function createBtn(){
     btnDiv.id = 'btnDiv';
     let btn = document.createElement('button');
     btn.id = 'reset';
-    btn.className = 'text-center btn btn-outline-success';
+    btn.className = 'text-center btn btn-outline-success mt-4';
     btn.innerText = 'Reset Game?';
-    btn.addEventListener('click', () => resetBoard());
+    btn.addEventListener('click', resetBoard);
     htmlBody.appendChild(btnDiv);
     btnDiv.appendChild(btn);
 }
 function resetBoard(){
     if(confirm('Are you sure? Hit OK to reset')){
-        for(let row = 0; row < 3; row++){
-            for(let col = 0; col < 3; col++){
-                let gridSquare = document.getElementById(`${row}${col}`)
-                gridSquare.addEventListener('click', squareClick);
-                gridSquare.classList.add('grid');
-                gridSquare.innerText = '';
-                gameState.gridSystem[row][col].char = '';
-            }
-        }
+        document.getElementById('reset').removeEventListener('click', resetBoard);
+        deleteBot();
+        createGrid();
+        createBtn();
     }
+}
+
+function victoryBox(){
+    let winCard = document.createElement('card')
+}
+
+function deleteBot(){
+    let element = document.getElementById('gridSystem');
+    element.remove();
+    element = document.getElementById('reset');
+    element.remove();
 }
 
 init(); 
