@@ -1,9 +1,14 @@
 let htmlBody = document.getElementById('app');
-let state = {
+
+let gameState = {
     gridSystem: [[]],
     turnOrder: true,
     playerX: '',
     playerO: '',
+}
+
+class Grid{
+    constructor(coords, position, )
 }
 
 function init(){
@@ -43,6 +48,9 @@ function createBtn(){
     btnDiv.appendChild(btn);
 }
 function resetBoard(){
-    ;
+    if(confirm('Are you sure? Hit OK to reset')){
+       // Reset board logic here.
+    }
 }
+
 init(); 
