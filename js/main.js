@@ -81,6 +81,11 @@ function squareClick(){
     }
     checkVictory(gameState.gridSystem[row][col]);
     gameState.turnOrder = !gameState.turnOrder;
+    if(gameState.numTurns === 9 && gameState.victoryBool){
+        deleteBot();
+        createBtn();
+        drawBox();
+    }
 }
 
 function checkVictory(gridSquare){
@@ -135,6 +140,7 @@ function checkRow(gridSquare){
         deleteBot();
         createBtn();
         victoryBox();
+        gameState.victoryBool = true;
         return true;
     }
     return false;;
@@ -146,6 +152,7 @@ function checkTopLeftDiag(gridSquare){
         deleteBot();
         createBtn();
         victoryBox();
+        gameState.victoryBool = true;
         return true;
     }
     return false;
@@ -157,6 +164,7 @@ function checkTopRightDiag(gridSquare){
         deleteBot();
         createBtn();
         victoryBox();
+        gameState.victoryBool = true;
         return true;
     }
     return false;
@@ -168,6 +176,7 @@ function checkCol(gridSquare){
         deleteBot();
         createBtn();
         victoryBox();
+        gameState.victoryBool = true;
         return true;
     }
     return false;
@@ -219,7 +228,17 @@ function resetBoard(){
         deleteBot();
         createGrid();
         createBtn();
+        gameState.numTurns = 0;
+        gameState.victoryBool = false;
     }
+}
+
+function drawBox(){
+    let cardBox = document.createElement('div');
+    cardBox.id = 'cardBox';
+    cardBox.className = 'border border-dark container-fluid bg-gradient col-6 p-1 mt-3';
+    cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
+    htmlBody.appendChild(cardBox);
 }
 
 function victoryBox(){
