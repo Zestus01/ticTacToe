@@ -35,7 +35,7 @@
 ##### &emsp; Is a 2D array that holds the grid squares
 ##### &emsp; Holds the ID of the divs on the front end to help interactivity
 ##### &emsp; gridSystem.last: is the last square clicked
-#### Turn
+#### turnOrder
 ##### &emsp; Will be a true/false  X for true, O for False
 ##### &emsp; Displays under the header
 ##### Properties
@@ -63,13 +63,6 @@
 ##### &emsp; Same logic but just different squares it checks 
 ### Init()
 ##### &emsp; Calls constructHead(), constructGrid(), constructBtn() in this order
-### construcGrid()
-##### &emsp; Create the div that will hold the squares for the game and appends it.
-##### &emsp; Each gridSquare will have the ID ranging from 00 - 22, matches the value in the 2D array
-##### &emsp; Class will be grid border-dark. Grid will have a css hover effect to help players chose the right square
-##### &emsp; Adds an event listener to the grid that calls updateSquare and passes iteslf to it
-##### &emsp; appends the gridSquare to the gridSystem
-##### &emsp; 
 #### constructHead()
 ##### &emsp; Creates a header div and appends it the page
 ##### &emsp; Create and append a H tag with text being Tic-Tac-Toe,
@@ -77,6 +70,13 @@
 ##### &emsp; Creates a P tag with ID turnOrder
 ##### &emsp; textContent = "It is the " X or O " players turn if True X player, false O player 
 ##### &emsp; class of subheader = text-center 
+### construcGrid()
+##### &emsp; Create the div that will hold the squares for the game and appends it.
+##### &emsp; Each gridSquare will have the ID ranging from 00 - 22, matches the value in the 2D array
+##### &emsp; Class will be unclicked border-dark. Grid will have a css hover effect to help players chose the right square
+##### &emsp; Adds an event listener to the grid that calls squareClicked and passes iteslf to it
+##### &emsp; appends the gridSquare to the gridSystem
+##### &emsp; 
 #### constructBtn()
 ##### &emsp; Create and append a button with ID reset
 ##### &emsp; Button text content is Restart Game
@@ -85,6 +85,14 @@
 
 ### resetBoard()
 ##### &emsp; resets the values of the grid system, running through the 2D array setting text =''; and clickable to true;
+##### &emsp; remove the event listener from each square and readds it to the square
 ##### &emsp; Will be called when restart game button gets clicked
 ##### &emsp; Displays an alert message calling for confirmation from a player
 
+### squareClicked()
+##### &emsp; Checks the players turn
+##### &emsp; Changes the gridSquare text content to an X if turn is true
+##### &emsp; O if false
+##### &emsp; Changes the grid square class to border-dark clicked to remove the hover effect 
+##### &emsp; Removes the event listener for the square to avoid reclicking and 
+##### &emsp; Changes the turnOrder
