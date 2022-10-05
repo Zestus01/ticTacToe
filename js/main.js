@@ -8,7 +8,12 @@ let gameState = {
 }
 
 class Grid{
-    constructor(coords, position, )
+    constructor(coords, position){
+        this.coords = coords;
+        this.positon = position;
+        this.clickable = true;
+        this.char = '';
+    }
 }
 
 function init(){
@@ -31,7 +36,7 @@ function createHeader(){
 
 function createGrid(){
     let grid = document.createElement('div');
-    grid.textContent = 'It worked';
+    grid.className = 'border-dark d-flex justify-content-center text-center';
     htmlBody.appendChild(grid);
 }
 
