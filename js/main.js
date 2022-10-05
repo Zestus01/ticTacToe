@@ -9,6 +9,7 @@ const gameState = {
     turnOrder: true,
     playerX: '',
     playerO: '',
+    numTurns: 0,
 }
 
 class Grid{
@@ -38,6 +39,7 @@ function createHeader(){
     let subHeader = document.createElement('p');
     subHeader.className = 'text-center text-muted';
     subHeader.textContent = 'It is the X players turn';
+    subHeader.id = 'sub';
     htmlBody.appendChild(subHeader);
 }
 
@@ -54,7 +56,6 @@ function createGrid(){
             let gridSquare = document.createElement('div');
             gridSquare.className = 'display-3 d-flex justify-content-center text-center grid border border-dark col-4 p-5';
             gridSquare.id = `${row}${col}`;
-            gridSquare.textContent = `${row}${col}`;
             gridSquare.addEventListener('click', squareClick);
             grid.appendChild(gridSquare);
         }
@@ -63,10 +64,29 @@ function createGrid(){
 
 function squareClick(){
     let gridSquare = document.getElementById(event.target.id);
-    gridSquare.className = 'display-3 d-flex justify-content-center text-center border border-dark col-4 p-5';
+    let coords = event.target.id;
+    let row = coords[0];
+    let col = coords[1];
+    let subHeader = document.getElementById('sub');
+    gridSquare.classList.remove('grid');;
     gridSquare.removeEventListener('click', squareClick);
+    if(gameState.turnOrder){
+        gameState.gridSystem[row][col].char = 'X';
+        gridSquare.innerText = 'X';
+        subHeader.innerText = 'It is the O players turn';
+    } else {
+        gameState.gridSystem[row][col].char = 'O';
+        gridSquare.innerText = 'O';
+        subHeader.innerText = 'It is the X players turn';
+    }
+    checkVictory(gameState.gridSystem[row][col]);
+    gameState.turnOrder = !gameState.turnOrder;
 }
 
+function checkVictory(gridSquare){
+
+
+}
 function createTopRow(){
     let grid00 = new Grid(0, 0, 'topLeft', 'corner');
     gameState.gridSystem[0].push(grid00);
@@ -108,7 +128,15 @@ function createBtn(){
 }
 function resetBoard(){
     if(confirm('Are you sure? Hit OK to reset')){
-       // Reset board logic here.
+        for(let row = 0; row < 3; row++){
+            for(let col = 0; col < 3; col++){
+                let gridSquare = document.getElementById(`${row}${col}`)
+                gridSquare.addEventListener('click', squareClick);
+                gridSquare.classList.add('grid');
+                gridSquare.innerText = '';
+                gameState.gridSystem[row][col].char = '';
+            }
+        }
     }
 }
 
