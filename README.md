@@ -16,6 +16,10 @@
 ##### &emsp; STRECH: Buttons to change the game to Ultimate or Connect Four
 ## Javascript
 ### State objects
+#### playerX
+##### &emsp; Is a string that holds the X player's name
+#### playerO
+##### &emsp; A string that holds the O player's name
 #### numMoves
 ##### &emsp; Starts at 0 and increases by one after every move
 ####  Grid square
@@ -43,7 +47,7 @@
 ##### &emsp; checks the last square moved and calls the neccassry helper funtions
 ##### &emsp; Corner calls each helper function checkDiag(), checkRow(), checkTop()
 ##### &emsp; Edge calls checkRow, checkTop
-##### &emsp; Mid checks each
+##### &emsp; Mid checks each helper but the mid versions
 #### &emsp; checkDiag()
 ##### &emsp; Gets the X,Y coords of the last square
 ##### &emsp; Steps through the grid in a diagonal using a switch
@@ -58,12 +62,29 @@
 #### NOTE the mid square will have the same functions but checkMidDiag(), checkMidRow(), checkMidTop()
 ##### &emsp; Same logic but just different squares it checks 
 ### Init()
-##### &emsp; Contructs the grid
-##### &emsp; Resets the value of the board converting the state back to default values
-##### &emsp; Calls constructGrid(), constructHead(), constructBtn();
+##### &emsp; Calls constructHead(), constructGrid(), constructBtn() in this order
 ### construcGrid()
 ##### &emsp; Create the div that will hold the squares for the game and appends it.
-##### &emsp; Each grid will have the ID ranging from 00 - 22, matches the value in the 2D array
+##### &emsp; Each gridSquare will have the ID ranging from 00 - 22, matches the value in the 2D array
 ##### &emsp; Class will be grid border-dark. Grid will have a css hover effect to help players chose the right square
-##### &emsp; appends the grid to the gridSystem
+##### &emsp; Adds an event listener to the grid that calls updateSquare and passes iteslf to it
+##### &emsp; appends the gridSquare to the gridSystem
+##### &emsp; 
+#### constructHead()
+##### &emsp; Creates a header div and appends it the page
+##### &emsp; Create and append a H tag with text being Tic-Tac-Toe,
+##### &emsp; Class will have text-center
+##### &emsp; Creates a P tag with ID turnOrder
+##### &emsp; textContent = "It is the " X or O " players turn if True X player, false O player 
+##### &emsp; class of subheader = text-center 
+#### constructBtn()
+##### &emsp; Create and append a button with ID reset
+##### &emsp; Button text content is Restart Game
+##### &emsp;  calls the resetBoard() fucntion after confirmation from player
+##### &emsp; button class either justify-content-center or text-center
+
+### resetBoard()
+##### &emsp; resets the values of the grid system, running through the 2D array setting text =''; and clickable to true;
+##### &emsp; Will be called when restart game button gets clicked
+##### &emsp; Displays an alert message calling for confirmation from a player
 
