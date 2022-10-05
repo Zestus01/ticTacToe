@@ -39,6 +39,7 @@
 ### Functions
 #### checkVictory()
 ##### &emsp; Will be called after turn 5, returns a true for victory or false
+##### &emsp; If no victory after 9 turns calls gameDraw();
 ##### &emsp; checks the last square moved and calls the neccassry helper funtions
 ##### &emsp; Corner calls each helper function checkDiag(), checkRow(), checkTop()
 ##### &emsp; Edge calls checkRow, checkTop
@@ -56,6 +57,13 @@
 ##### &emsp; Steps through the array vertically
 #### NOTE the mid square will have the same functions but checkMidDiag(), checkMidRow(), checkMidTop()
 ##### &emsp; Same logic but just different squares it checks 
-
-
+### Init()
+##### &emsp; Contructs the grid
+##### &emsp; Resets the value of the board converting the state back to default values
+##### &emsp; Calls constructGrid(), constructHead(), constructBtn();
+### construcGrid()
+##### &emsp; Create the div that will hold the squares for the game and appends it.
+##### &emsp; Each grid will have the ID ranging from 00 - 22, matches the value in the 2D array
+##### &emsp; Class will be grid border-dark. Grid will have a css hover effect to help players chose the right square
+##### &emsp; appends the grid to the gridSystem
 
