@@ -68,6 +68,7 @@ function squareClick(){
     let row = coords[0];
     let col = coords[1];
     let subHeader = document.getElementById('sub');
+    gameState.numTurns++;
     gridSquare.classList.remove('grid');;
     gridSquare.removeEventListener('click', squareClick);
     if(gameState.turnOrder){
@@ -81,7 +82,7 @@ function squareClick(){
     }
     checkVictory(gameState.gridSystem[row][col]);
     gameState.turnOrder = !gameState.turnOrder;
-    if(gameState.numTurns === 9 && gameState.victoryBool){
+    if(gameState.numTurns === 9 && !gameState.victoryBool){
         deleteBot();
         createBtn();
         drawBox();
