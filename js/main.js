@@ -52,19 +52,19 @@ function createGrid(){
     for(let row = 0; row < 3; row++){
         for(let col = 0; col < 3; col++){
             let gridSquare = document.createElement('div');
-            gridSquare.className = 'd-flex justify-content-center text-center grid border border-dark col-4';
+            gridSquare.className = 'display-3 d-flex justify-content-center text-center grid border border-dark col-4 p-5';
             gridSquare.id = `${row}${col}`;
             gridSquare.textContent = `${row}${col}`;
-            gridSquare.addEventListener('click', () => squareClick(gridSquare.id));
+            gridSquare.addEventListener('click', squareClick);
             grid.appendChild(gridSquare);
         }
     }
 }
 
-function squareClick(id){
-    let gridSquare = document.getElementById(id);
-    gridSquare.className = 'd-flex justify-content-center text-center border border-dark col-4';
-    alert(`This square got clicked ${id}`);
+function squareClick(){
+    let gridSquare = document.getElementById(event.target.id);
+    gridSquare.className = 'display-3 d-flex justify-content-center text-center border border-dark col-4 p-5';
+    gridSquare.removeEventListener('click', squareClick);
 }
 
 function createTopRow(){
