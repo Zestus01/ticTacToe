@@ -14,13 +14,12 @@ const gameState = {
 }
 
 class Grid{
-    constructor(coordX, cordY, position, check){
-        this.coordX = coordX;
-        this.cordY = cordY;
-        this.positon = position;
+    constructor(coordX, cordY, position){
+        this.row = coordX;
+        this.col = cordY;
+        this.position = position;
         this.clickable = true;
         this.char = '';
-        this.check = check;
         this.gridID = `${coordX}${cordY}`;
     }
 }
@@ -88,28 +87,44 @@ function checkVictory(gridSquare){
     switch (gridSquare.position){
             case 'edge':{
                 if(checkRow(gridSquare)){
-                    return;
+                    break;
                 }
                 checkCol(gridSquare);
                 break;
             }
-            case 'corner':
+            case 'topLeft':{
                 if(checkRow(gridSquare)){
-                    return;
+                    break;
                 }
                 if(checkCol(gridSquare)){
-                    return;
+                    break;
                 }
-                checkDiag(gridSquare);
+                checkTopLeftDiag(gridSquare);
                 break;
-            case 'mid':
+            }
+            case 'topRight':{
                 if(checkRow(gridSquare)){
-                    return;
+                    break;
                 }
                 if(checkCol(gridSquare)){
-                    return;
+                    break;
                 }
-                checkMidDiag(gridSquare);
+                checkTopRightDiag(gridSquare);
+                break;
+            }
+            case 'mid':{
+                if(checkRow(gridSquare)){
+                    break;
+                }
+                if(checkCol(gridSquare)){
+                    break;
+                }
+                if(checkTopRightDiag(gridSquare)){
+                break;
+                }
+                checkTopLeftDiag(gridSquare);
+                break;
+            }
     }
 }
 
@@ -120,32 +135,69 @@ function checkRow(gridSquare){
         deleteBot();
         createBtn();
         victoryBox();
+        return true;
     }
+    return false;;
 }
+//Starting at top left to bottom right
+function checkTopLeftDiag(gridSquare){
+    let mark = gridSquare.char;
+    if(gameState.gridSystem[0][0].char === mark && gameState.gridSystem[1][1].char === mark && gameState.gridSystem[2][2].char === mark){
+        deleteBot();
+        createBtn();
+        victoryBox();
+        return true;
+    }
+    return false;
+}
+//Starting bottom Left to top right
+function checkTopRightDiag(gridSquare){
+    let mark = gridSquare.char;
+    if(gameState.gridSystem[0][2].char === mark && gameState.gridSystem[1][1].char === mark && gameState.gridSystem[2][0].char === mark){
+        deleteBot();
+        createBtn();
+        victoryBox();
+        return true;
+    }
+    return false;
+}
+function checkCol(gridSquare){
+    let col = gridSquare.col;
+    let mark = gridSquare.char;
+    if(gameState.gridSystem[0][col].char === mark && gameState.gridSystem[1][col].char === mark && gameState.gridSystem[2][col].char === mark){
+        deleteBot();
+        createBtn();
+        victoryBox();
+        return true;
+    }
+    return false;
+}
+
+
 function createTopRow(){
-    let grid00 = new Grid(0, 0, 'topLeft', 'corner');
+    let grid00 = new Grid(0, 0, 'topLeft');
     gameState.gridSystem[0][0] = grid00;
-    let grid01 = new Grid(0, 1, 'topMid', 'edge');
+    let grid01 = new Grid(0, 1, 'edge');
     gameState.gridSystem[0][1] = grid01;
-    let grid02 = new Grid(0, 2, 'topRight', 'corner');
+    let grid02 = new Grid(0, 2, 'topRight');
     gameState.gridSystem[0][2] = grid02;
 }
 
 function createMidRow(){
-    let grid10 = new Grid(1, 0, 'midLeft', 'edge');
+    let grid10 = new Grid(1, 0, 'edge');
     gameState.gridSystem[1][0] = grid10;
-    let grid11 = new Grid(1, 1, 'midMid', 'mid');
+    let grid11 = new Grid(1, 1, 'mid');
     gameState.gridSystem[1][1] = grid11;
-    let grid12 = new Grid(1, 2, 'midRight', 'edge');
+    let grid12 = new Grid(1, 2, 'edge');
     gameState.gridSystem[1][2] = grid12;
 }
 
 function createBotRow(){
-    let grid20 = new Grid(2, 0, 'botLeft', 'corner');
+    let grid20 = new Grid(2, 0, 'topRight');
     gameState.gridSystem[2][0] = grid20;
-    let grid21 = new Grid(2, 1, 'botMid', 'edge');
+    let grid21 = new Grid(2, 1, 'edge');
     gameState.gridSystem[2][1] = grid21;
-    let grid22 = new Grid(2, 2, 'botRight', 'corner');
+    let grid22 = new Grid(2, 2, 'topLeft');
     gameState.gridSystem[2][2] = grid22;
 }
 
@@ -173,10 +225,9 @@ function resetBoard(){
 function victoryBox(){
     let cardBox = document.createElement('div');
     cardBox.id = 'cardBox';
-    let XorO = turnOrder ? 'X' : 'O';
-    cardBox.className = 'border border-dark container-fluid bg-gradient col-6 p-1 display-2 mt-3';
+    let XorO = gameState.turnOrder ? 'X' : 'O';
+    cardBox.className = 'border border-dark container-fluid bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `CONGRULATIONS THE ${XorO} PLAYER WON`
-    cardBox.textContent = text;
     htmlBody.appendChild(cardBox);
 }
 
