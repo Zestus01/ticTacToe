@@ -6,7 +6,7 @@ const gameState = {
         [],
         [],
     ],
-    turnOrder: true,
+    turnOrder: 'true',
     playerX: '',
     playerO: '',
     numTurns: 0,
@@ -112,6 +112,16 @@ function checkVictory(gridSquare){
                 checkMidDiag(gridSquare);
     }
 }
+
+function checkRow(gridSquare){
+    let row = gridSquare.row;
+    let mark = gridSquare.char;
+    if(gameState.gridSystem[row][0].char === mark && gameState.gridSystem[row][1].char === mark && gameState.gridSystem[row][2].char === mark){
+        deleteBot();
+        createBtn();
+        victoryBox();
+    }
+}
 function createTopRow(){
     let grid00 = new Grid(0, 0, 'topLeft', 'corner');
     gameState.gridSystem[0][0] = grid00;
@@ -161,14 +171,26 @@ function resetBoard(){
 }
 
 function victoryBox(){
-    let winCard = document.createElement('card')
+    let cardBox = document.createElement('div');
+    cardBox.id = 'cardBox';
+    let XorO = turnOrder ? 'X' : 'O';
+    cardBox.className = 'border border-dark container-fluid bg-gradient col-6 p-1 display-2 mt-3';
+    cardBox.innerText = `CONGRULATIONS THE ${XorO} PLAYER WON`
+    cardBox.textContent = text;
+    htmlBody.appendChild(cardBox);
 }
 
 function deleteBot(){
-    let element = document.getElementById('gridSystem');
+    let element = document.getElementById('reset');
     element.remove();
-    element = document.getElementById('reset');
-    element.remove();
+    element = document.getElementById('gridSystem');
+    if(element != null){
+        element.remove();
+    }
+    element = document.getElementById('cardBox');
+    if(element != null){
+        element.remove();
+    }
 }
 
 init(); 
