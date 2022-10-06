@@ -71,6 +71,7 @@ function createScoreBoard(){
     gameState.playerXScore = scoreX ? scoreX : 0; 
     scoreBoard.textContent = `The score is ${gameState.playerXScore} X to ${gameState.playerOScore} O!`;
 }
+
 function createInputForms(){
     let topRow = document.getElementById('topRow');
 
@@ -172,6 +173,7 @@ function checkVictory(square){
         }
     }
 }
+
 // Checks for the same row that the character is on
 function checkRow(square){
     let row = square.row;
@@ -186,6 +188,7 @@ function checkRow(square){
         declareVictory();
     }
 }
+
 //Starting at top left to bottom right diagonal
 function checkTopLeftDiag(square){
     let mark = square.char;
@@ -199,6 +202,7 @@ function checkTopLeftDiag(square){
         declareVictory();
     }
 }
+
 //Starting bottom Left to top right diagonal
 function checkTopRightDiag(square){
     let mark = square.char;
@@ -212,6 +216,7 @@ function checkTopRightDiag(square){
         declareVictory();
     }
 }
+
 // Check the column of current square and checks for same characters
 function checkCol(square){
     let col = square.col;
@@ -226,6 +231,7 @@ function checkCol(square){
         declareVictory();
     }
 }
+
 // Helper function that calls for victory
 function declareVictory(){
     gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
@@ -243,6 +249,7 @@ function declareVictory(){
     }
     gameState.victoryBool = true;
 }
+
 // Dynamicaly creates the grid squares.
 function createGridSquares(){
     for(let row = 0; row < gameState.gridDimensions; row++){
@@ -266,6 +273,7 @@ function createBtn(){
     htmlBody.appendChild(btnDiv);
     btnDiv.appendChild(btn);
 }
+
 // Deletes the board and remakes it, asks for confirmation first
 function resetBoard(){
     if(confirm('Are you sure? Hit OK to reset')){
@@ -278,6 +286,7 @@ function resetBoard(){
         gameState.victoryBool = false;
     }
 }
+
 // If the game ends in a draw
 function drawBox(){
     let cardBox = document.createElement('div');
@@ -286,6 +295,7 @@ function drawBox(){
     cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
     htmlBody.appendChild(cardBox);
 }
+
 // Draws a victory box and delcares who wins
 function victoryBox(){
     let cardBox = document.createElement('div');
