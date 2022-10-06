@@ -65,16 +65,22 @@ function createHeader(){
     htmlBody.appendChild(topRow);
 
     createInputForms();
-    createScoreBoard();
     let subHeader = document.createElement('p');
     subHeader.className = 'text-center text-info';
     subHeader.textContent = `It is the ${gameState.playerX} player's turn (X)`;
     subHeader.id = 'sub';
     topRow.appendChild(subHeader);
+    createScoreBoard();
 }
 // Updates the scoreboard with the new score
 function updateScoreBoard(){
     let scoreBoard = document.getElementById('scoreBoard');
+    let subHeader = document.getElementById('sub');
+    if(gameState.turnOrder){
+        subHeader.innerText = `It is the ${gameState.playerX} player's turn (X)`;
+    } else {
+        subHeader.innerText = `It is the ${gameState.playerO} player's turn (O)`;
+    }
     scoreBoard.textContent = `The score is ${gameState.playerXScore} ${gameState.playerX} to ${gameState.playerOScore} ${gameState.playerO}!`;
 }
 // Creates the scoreboard section of the page
@@ -157,9 +163,21 @@ function createGrid(){
 // If a grid gets clicked 
 function squareClick(){
     let square = document.getElementById(this.id);
-    let cords = this.id;
-    let row = cords[0];
-    let col = cords[1];
+    squareMove(square)
+    if(gameState.victoryBool){
+        return;
+    }
+    if(!gameState.victoryBool && gameState.aiOnorOff){
+        aiMove();
+    }
+    // if(gameState.aiOnorOff){
+    // }
+}
+
+function squareMove(square){
+    let coordinates = square.id;
+    let row = coordinates[0];
+    let col = coordinates[1];
     let subHeader = document.getElementById('sub');
     gameState.numTurns++;
     square.classList.remove('grid');
@@ -183,11 +201,6 @@ function squareClick(){
         drawBox();
         return;
     }
-    if(!gameState.victoryBool && gameState.aiOnorOff){
-        aiMove();
-    }
-    // if(gameState.aiOnorOff){
-    // }
 }
 
 function checkVictory(square){
@@ -277,6 +290,7 @@ function declareVictory(){
     gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
     window.localStorage.setItem('playerXScore', gameState.playerXScore);
     window.localStorage.setItem('playerOScore', gameState.playerOScore);
+    gameState.turnOrder = !gameState.turnOrder;
     victoryBox();
     updateScoreBoard();
     for(let row = 0; row < gameState.gridDimensions; row++){
@@ -322,6 +336,7 @@ function resetBoard(){
         deleteBot();
         createGrid();
         createBtn();
+        updateScoreBoard();
         gameState.numTurns = 0;
         gameState.victoryBool = false;
     }
@@ -362,6 +377,8 @@ function deleteBot(){
 
 init(); 
 
+
+//ALL of Skynet related functions down here.
 function turnAIOnorOff(){
     let aiBtn = document.getElementById('aiBtn');
     let diffBtn = document.getElementById('aiDiffBtn');
@@ -389,7 +406,6 @@ function changeDiffAI(){
                 diffBtn.value = 'AI: Random';
                 break;
         }
-        
     }
 }
 
@@ -413,35 +429,32 @@ function aiEasyMove(){
 }
 
 function aiImpossibleMove(){
+    if(gameState.numTurns === 0){
+        squareMove(gameState.gridSystem[0][0])
+        return;
+    } else if(gameState.gridSystem[1][1].textContent != ''){
+        squareMove(gameState.gridSystem[1][1]);
+        return;
+    } else {
+        checkCorners();
+    }
+}
+// Checks the c
+function checkCorners(){
+    let square = document.getElementById('00');
+    if(square.textContent === ''){
 
+    }
 }
 
 function aiRandomMove(){
     let row = Math.floor(Math.random() * gameState.gridDimensions);
     let col = Math.floor(Math.random() * gameState.gridDimensions);
     let square = document.getElementById(`${row}${col}`);
-    let subHeader = document.getElementById('sub');
     while(!square.classList.contains('grid')){
         row = Math.floor(Math.random() * gameState.gridDimensions);
         col = Math.floor(Math.random() * gameState.gridDimensions);
         square = document.getElementById(`${row}${col}`);
     }
-    gameState.numTurns++;
-    square.classList.remove('grid');
-    square.removeEventListener('click', squareClick);
-    square.classList.add('text-warning');
-    if(gameState.turnOrder){
-        console.log('true');
-        gameState.gridSystem[row][col].char = 'X';
-        square.innerText = 'X';
-        square.classList.add('greenTeam');
-        subHeader.innerText = `It is the ${gameState.playerO} player's turn (O)`;
-    } else {
-        gameState.gridSystem[row][col].char = 'O';
-        square.innerText = 'O';
-        square.classList.add('blueTeam');
-        subHeader.innerText = `It is the ${gameState.playerX} player's turn (X)`;
-    }
-    checkVictory(gameState.gridSystem[row][col]);
-    gameState.turnOrder = !gameState.turnOrder;
+    squareMove(square);
 }
