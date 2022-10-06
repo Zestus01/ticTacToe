@@ -21,11 +21,11 @@ const gameState = {
 }
 
 class GridSquare{
-    constructor(coordX, cordY){
-        this.row = coordX;
+    constructor(cordX, cordY){
+        this.row = cordX;
         this.col = cordY;
         this.char = '';
-        this.gridID = `${coordX}${cordY}`;
+        this.gridID = `${cordX}${cordY}`;
     }
 }
 
@@ -66,10 +66,10 @@ function createGrid(){
 }
 
 function squareClick(){
-    let square = document.getElementById(event.target.id);
-    let coords = this.id;
-    let row = coords[0];
-    let col = coords[1];
+    let square = document.getElementById(this.id);
+    let cords = this.id;
+    let row = cords[0];
+    let col = cords[1];
     let subHeader = document.getElementById('sub');
     gameState.numTurns++;
     square.classList.remove('grid');;
