@@ -5,6 +5,9 @@ const gameState = {
         [],
         [],
         [],
+        [],
+        [],
+        [],
     ],
     turnOrder: 'true',
     playerX: '',
@@ -12,6 +15,7 @@ const gameState = {
     numTurns: 0,
     victoryBool: false,
     victoryDimension: 3,
+    gridDimensions: 3,
 }
 
 class GridSquare{
@@ -49,40 +53,42 @@ function createGrid(){
     grid.className = 'm-2 container-fluid border border-dark d-flex justify-content-center text-center row col-12';
     grid.id = 'gridSystem';
     htmlBody.appendChild(grid);
+    createBotRow();
     createTopRow();
     createMidRow();
-    createBotRow();
-    for(let row = 0; row < 3; row++){
-        for(let col = 0; col < 3; col++){
-            let gridSquare = document.createElement('div');
-            gridSquare.className = 'display-3 d-flex justify-content-center text-center grid border border-dark col-4 p-5';
-            gridSquare.id = `${row}${col}`;
-            gridSquare.addEventListener('click', squareClick);
-            grid.appendChild(gridSquare);
+    //createGridSquares();
+    for(let row = 0; row < gameState.gridDimensions; row++){
+        for(let col = 0; col < gameState.gridDimensions; col++){
+            let square = document.createElement('div');
+            square.className = 'display-3 d-flex justify-content-center text-center grid border border-dark col-4 p-5';
+            square.id = `${row}${col}`;
+            square.addEventListener('click', squareClick);
+            grid.appendChild(square);
         }
     }
 }
 
 function squareClick(){
-    let gridSquare = document.getElementById(event.target.id);
-    let coords = event.target.id;
+    let square = document.getElementById(event.target.id);
+    let coords = this.id;
     let row = coords[0];
     let col = coords[1];
     let subHeader = document.getElementById('sub');
     gameState.numTurns++;
-    gridSquare.classList.remove('grid');;
-    gridSquare.removeEventListener('click', squareClick);
+    square.classList.remove('grid');;
+    square.removeEventListener('click', squareClick);
     if(gameState.turnOrder){
         gameState.gridSystem[row][col].char = 'X';
-        gridSquare.innerText = 'X';
+        square.innerText = 'X';
         subHeader.innerText = 'It is the O players turn';
     } else {
         gameState.gridSystem[row][col].char = 'O';
-        gridSquare.innerText = 'O';
+        square.innerText = 'O';
         subHeader.innerText = 'It is the X players turn';
     }
     checkVictory(gameState.gridSystem[row][col]);
     gameState.turnOrder = !gameState.turnOrder;
+    // Draw happened
     if(gameState.numTurns === 9 && !gameState.victoryBool){
         deleteBot();
         createBtn();
@@ -170,7 +176,7 @@ function checkTopRightDiag(square){
     let mark = square.char;
     let isVictory = true;
     for(let i = 0; i < gameState.victoryDimension; i++){
-        if(gameState.gridSystem[i][(i-i)].char != mark){
+        if(gameState.gridSystem[i][(gameState.victoryDimension-(i+1))].char != mark){
             isVictory = false;
         }
     }
@@ -198,10 +204,24 @@ function checkCol(square){
 }
 // Helper function that calls for victory
 function declareVictory(){
-    deleteBot();
-    createBtn();
     victoryBox();
+    for(let row = 0; row < gameState.gridDimensions; row++){
+        for(let col = 0; col < gameState.gridDimensions; col++){
+            let square = document.getElementById(`${row}${col}`)
+            square.id = `${row}${col}`;
+            square.removeEventListener('click', squareClick);
+            square.classList.remove('grid');
+        }
+    }
     gameState.victoryBool = true;
+}
+
+function createGridSquares(){
+    for(let row = 0; row < gameState.gridDimensions; row++){
+        for(let col = 0; col < gameState.gridDimensions; col++){
+
+        }
+    }
 }
 // Creates the top row of the grid
 function createTopRow(){
