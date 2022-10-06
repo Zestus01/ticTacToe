@@ -101,42 +101,21 @@ function squareClick(){
 function checkVictory(square){
     switch (square.position){
             case 'edge':{
-                if(checkRow(square)){
-                    break;
-                }
+                checkRow(square)
                 checkCol(square);
-                break;
             }
             case 'topLeft':{
-                if(checkRow(square)){
-                    break;
-                }
-                if(checkCol(square)){
-                    break;
-                }
                 checkTopLeftDiag(square);
                 break;
             }
             case 'topRight':{
-                if(checkRow(square)){
-                    break;
-                }
-                if(checkCol(square)){
-                    break;
-                }
                 checkTopRightDiag(square);
                 break;
             }
             case 'mid':{
-                if(checkRow(square)){
-                    break;
-                }
-                if(checkCol(square)){
-                    break;
-                }
-                if(checkTopRightDiag(square)){
-                break;
-                }
+                checkRow(square)
+                checkCol(square)
+                checkTopRightDiag(square)
                 checkTopLeftDiag(square);
                 break;
             }
