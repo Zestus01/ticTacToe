@@ -40,7 +40,7 @@ function init(){
 function createHeader(){
     let header = document.createElement('h3');
     header.textContent = 'Zic Zac Zoe';
-    header.className = 'text-center text-danger display-3';
+    header.className = 'text-center text-danger display-1';
     htmlBody.appendChild(header);
 
     let topRow = document.createElement('div');
@@ -65,7 +65,7 @@ function updateScoreBoard(){
 function createScoreBoard(){
     let topRow = document.getElementById('topRow');
     let scoreBoard = document.createElement('card');
-    scoreBoard.className = 'text-center border-dark text-warning display-5';
+    scoreBoard.className = 'text-center border-dark text-warning display-6';
     scoreBoard.id = 'scoreBoard';
     topRow.appendChild(scoreBoard);
     let scoreX = window.localStorage.getItem('playerXScore');
