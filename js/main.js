@@ -21,11 +21,9 @@ const gameState = {
 }
 
 class GridSquare{
-    constructor(coordX, cordY, position){
+    constructor(coordX, cordY){
         this.row = coordX;
         this.col = cordY;
-        this.position = position;
-        this.clickable = true;
         this.char = '';
         this.gridID = `${coordX}${cordY}`;
     }
@@ -55,10 +53,7 @@ function createGrid(){
     grid.className = 'm-2 container-fluid border border-dark d-flex justify-content-center text-center row col-12';
     grid.id = 'gridSystem';
     htmlBody.appendChild(grid);
-    createBotRow();
-    createTopRow();
-    createMidRow();
-    //createGridSquares();
+    createGridSquares();
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
             let square = document.createElement('div');
@@ -99,22 +94,20 @@ function squareClick(){
 }
   
 function checkVictory(square){
-    switch (square.position){
-            case 'edge':{
-                checkRow(square)
-                checkCol(square);
-            }
-            case 'topLeft':{
+    checkRow(square);
+    checkCol(square);
+    switch (square.gridID){
+            case '00':
+            case '22':{
                 checkTopLeftDiag(square);
                 break;
             }
-            case 'topRight':{
+            case '02':
+            case '20':{
                 checkTopRightDiag(square);
                 break;
             }
-            case 'mid':{
-                checkRow(square)
-                checkCol(square)
+            case '11':{
                 checkTopRightDiag(square)
                 checkTopLeftDiag(square);
                 break;
@@ -133,9 +126,7 @@ function checkRow(square){
     }
     if(isVictory){
         declareVictory();
-        return true;
     }
-    return false;;
 }
 //Starting at top left to bottom right diagonal
 function checkTopLeftDiag(square){
@@ -148,9 +139,7 @@ function checkTopLeftDiag(square){
     }
     if(isVictory){
         declareVictory();
-        return true;
     }
-    return false;
 }
 //Starting bottom Left to top right diagonal
 function checkTopRightDiag(square){
@@ -163,9 +152,7 @@ function checkTopRightDiag(square){
     }
     if(isVictory){
         declareVictory();
-        return true;
     }
-    return false;
 }
 // Check the column of current square and checks for same characters
 function checkCol(square){
@@ -179,9 +166,7 @@ function checkCol(square){
     }
     if(isVictory){
         declareVictory();
-        return true;
     }
-    return false;
 }
 // Helper function that calls for victory
 function declareVictory(){
@@ -196,41 +181,16 @@ function declareVictory(){
     }
     gameState.victoryBool = true;
 }
-
+// Dynamicaly creates the grid squares.
 function createGridSquares(){
     for(let row = 0; row < gameState.gridDimensions; row++){
-        for(let col = 0; col < gameState.gridDimensions; col++){
-
+        for(let col = 0; col < gameState.gridDimensions; col++){    
+            let square = new GridSquare(row, col, '')
+            gameState.gridSystem[row][col]= square;
         }
     }
 }
-// Creates the top row of the grid
-function createTopRow(){
-    let grid00 = new GridSquare(0, 0, 'topLeft');
-    gameState.gridSystem[0][0] = grid00;
-    let grid01 = new GridSquare(0, 1, 'edge');
-    gameState.gridSystem[0][1] = grid01;
-    let grid02 = new GridSquare(0, 2, 'topRight');
-    gameState.gridSystem[0][2] = grid02;
-}
-// Creates the middle row the grid.
-function createMidRow(){
-    let grid10 = new GridSquare(1, 0, 'edge');
-    gameState.gridSystem[1][0] = grid10;
-    let grid11 = new GridSquare(1, 1, 'mid');
-    gameState.gridSystem[1][1] = grid11;
-    let grid12 = new GridSquare(1, 2, 'edge');
-    gameState.gridSystem[1][2] = grid12;
-}
-// Creates the bottom row of the grid system.
-function createBotRow(){
-    let grid20 = new GridSquare(2, 0, 'topRight');
-    gameState.gridSystem[2][0] = grid20;
-    let grid21 = new GridSquare(2, 1, 'edge');
-    gameState.gridSystem[2][1] = grid21;
-    let grid22 = new GridSquare(2, 2, 'topLeft');
-    gameState.gridSystem[2][2] = grid22;
-}
+
 // Creates the reset button appends it to the page
 function createBtn(){
     let btnDiv = document.createElement('div');
