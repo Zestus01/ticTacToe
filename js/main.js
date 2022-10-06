@@ -6,17 +6,19 @@ const gameState = {
         [],
         [],
     ],
+    // True for X, False for O
     turnOrder: 'true',
     playerX: 'X',
     playerO: 'O',
     numTurns: 0,
+    // Whether or not a victory has commenced
     victoryBool: false,
     victoryDimension: 3,
     gridDimensions: 3,
     playerXScore: 0,
     playerOScore: 0,
 }
-
+// A square of the grid
 class GridSquare{
     constructor(cordX, cordY){
         this.row = cordX;
@@ -26,6 +28,7 @@ class GridSquare{
     }
 }
 
+// Intitializes the page
 function init(){
     createHeader();
     createGrid();
@@ -33,7 +36,7 @@ function init(){
     window.localStorage.getItem('player0') ? gameState.playerO = window.localStorage.getItem('playerO') : 0;
     window.localStorage.getItem('playerX') ? gameState.playerX = window.localStorage.getItem('playerX') : 0;
 }
-
+// Creates the top section of the app
 function createHeader(){
     let header = document.createElement('h3');
     header.textContent = 'Zic Zac Zoe';
@@ -53,12 +56,12 @@ function createHeader(){
     subHeader.id = 'sub';
     topRow.appendChild(subHeader);
 }
-
+// Updates the scoreboard with the new score
 function updateScoreBoard(){
     let scoreBoard = document.getElementById('scoreBoard');
     scoreBoard.textContent = `The score is ${gameState.playerXScore} X to ${gameState.playerOScore} O!`;
 }
-
+// Creates the scoreboard section of the page
 function createScoreBoard(){
     let topRow = document.getElementById('topRow');
     let scoreBoard = document.createElement('card');
@@ -71,7 +74,7 @@ function createScoreBoard(){
     gameState.playerXScore = scoreX ? scoreX : 0; 
     scoreBoard.textContent = `The score is ${gameState.playerXScore} X to ${gameState.playerOScore} O!`;
 }
-
+// Create the input forms for play inpu names
 function createInputForms(){
     let topRow = document.getElementById('topRow');
 
@@ -83,6 +86,7 @@ function createInputForms(){
         gameState.playerX = window.localStorage.getItem('playerXName');
     }
     inputFormX.id = 'playerXInput';
+    inputFormX.addEventListener('keyup', debounce(inputName));
     topRow.appendChild(inputFormX); 
 
     const inputFormO = document.createElement('input');
@@ -93,15 +97,36 @@ function createInputForms(){
         gameState.playerO = window.localStorage.getItem('playerOName');
     }
     inputFormO.id = 'playerOInput';
+    inputFormO.addEventListener('keyup', debounce(inputName));
     topRow.appendChild(inputFormO);
 }
 
+const debounce = (func, timeout = 300) => {
+    console.log('Hello there');
+    console.log(func);
+    let timer;
+    return (...args) =>{
+        clearTimeout(timer);
+        timer = setTimeout(() => {func.apply(this, args); }, timeout);
+    };
+}
+function inputName(){
+    let doc = document.getElementById('playerXInput').value;
+    doc ? gameState.playerX = doc.toUpperCase() : 0;
+    doc = document.getElementById('playerOInput').value 
+    doc ? gameState.playerO = doc.toUpperCase() : 0;
+    window.localStorage.setItem('playerXName', gameState.playerX);
+    window.localStorage.setItem('playerOName', gameState.playerO);
+    updateScoreBoard();
+}
+// Creates the grid for tic tac toe
 function createGrid(){
     let grid = document.createElement('div');
     grid.className = 'm-2 container-fluid border border-dark d-flex justify-content-center text-center row col-12';
     grid.id = 'gridSystem';
     htmlBody.appendChild(grid);
     createGridSquares()
+    // Loops and adds the interactive grids for clicking
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
             let square = document.createElement('div');
@@ -114,14 +139,9 @@ function createGrid(){
         }
     }
 }
-
+// If a grid gets clicked 
 function squareClick(){
-    let doc = document.getElementById('playerXInput').value;
-    doc ? gameState.playerX = doc.toUpperCase() : 0;
-    doc = document.getElementById('playerOInput').value 
-    doc ? gameState.playerO = doc.toUpperCase() : 0;
-    window.localStorage.setItem('playerXName', gameState.playerX);
-    window.localStorage.setItem('playerOName', gameState.playerO);
+   
     let square = document.getElementById(this.id);
     let cords = this.id;
     let row = cords[0];
