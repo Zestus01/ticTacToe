@@ -16,6 +16,8 @@ const gameState = {
     victoryBool: false,
     victoryDimension: 3,
     gridDimensions: 3,
+    playerXScore: 0,
+    playerOScore: 0,
 }
 
 class GridSquare{
