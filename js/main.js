@@ -167,6 +167,10 @@ function squareClick(){
     if(gameState.victoryBool){
         return;
     }
+    if(gameState.numTurns === 9 && !gameState.victoryBool){
+        drawBox();
+        return;
+    }
     if(!gameState.victoryBool && gameState.aiOnorOff){
         aiMove();
     }
@@ -448,6 +452,10 @@ function checkCorners(){
 }
 
 function aiRandomMove(){
+    if(gameState.turnOrder === 8){
+        lastMove();
+        return;
+    }
     let row = Math.floor(Math.random() * gameState.gridDimensions);
     let col = Math.floor(Math.random() * gameState.gridDimensions);
     let square = document.getElementById(`${row}${col}`);
@@ -457,4 +465,16 @@ function aiRandomMove(){
         square = document.getElementById(`${row}${col}`);
     }
     squareMove(square);
+}
+
+function lastMove(){
+    for(let row = 0; row < gameState.gridDimensions; row++){
+        for(let col = 0; col < gameState.gridDimensions; col++){
+            let square = document.getElementById(`${row}${col}`)
+            if(square.textContent === ''){
+                squareMove(square);
+                return;
+            }
+        }
+    }
 }
