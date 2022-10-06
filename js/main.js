@@ -17,6 +17,8 @@ const gameState = {
     gridDimensions: 3,
     playerXScore: 0,
     playerOScore: 0,
+    aiOnorOff: false,
+    aiDifficulty: 'random',
 }
 // A square of the grid
 class GridSquare{
@@ -38,6 +40,20 @@ function init(){
 }
 // Creates the top section of the app
 function createHeader(){
+    let aiBtn = document.createElement('input');
+    aiBtn.type = 'button';
+    aiBtn.id = 'aiBtn';
+    aiBtn.value = "AI: Off";
+    aiBtn.addEventListener('click', turnAIOnorOff);
+    htmlBody.append(aiBtn);
+
+    let aiDiffBtn = document.createElement('input');
+    aiDiffBtn.type = 'button';
+    aiDiffBtn.id = 'aiDiffBtn';
+    aiDiffBtn.value = "AI: Off";
+    aiDiffBtn.addEventListener('click', changeDiffAI);
+    htmlBody.append(aiDiffBtn);
+
     let header = document.createElement('h3');
     header.textContent = 'Zic Zac Zoe';
     header.className = 'text-center text-danger display-1';
@@ -102,8 +118,6 @@ function createInputForms(){
 }
 // Copy and pasted from Josh's weather app
 const debounce = (func, timeout = 300) => {
-    console.log('Hello there');
-    console.log(func);
     let timer;
     return (...args) =>{
         clearTimeout(timer);
@@ -142,14 +156,13 @@ function createGrid(){
 }
 // If a grid gets clicked 
 function squareClick(){
-   
     let square = document.getElementById(this.id);
     let cords = this.id;
     let row = cords[0];
     let col = cords[1];
     let subHeader = document.getElementById('sub');
     gameState.numTurns++;
-    square.classList.remove('grid');;
+    square.classList.remove('grid');
     square.removeEventListener('click', squareClick);
     square.classList.add('text-warning');
     if(gameState.turnOrder){
@@ -168,7 +181,13 @@ function squareClick(){
     // Draw happened
     if(gameState.numTurns === 9 && !gameState.victoryBool){
         drawBox();
+        return;
     }
+    if(!gameState.victoryBool && gameState.aiOnorOff){
+        aiMove();
+    }
+    // if(gameState.aiOnorOff){
+    // }
 }
 
 function checkVictory(square){
@@ -312,7 +331,7 @@ function resetBoard(){
 function drawBox(){
     let cardBox = document.createElement('div');
     cardBox.id = 'cardBox';
-    cardBox.className = 'border text-center border-dark container-fluid bg-gradient col-6 p-1 mt-3';
+    cardBox.className = 'border text-center border-dark container-fluid bg-warning bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
     htmlBody.appendChild(cardBox);
 }
@@ -322,7 +341,7 @@ function victoryBox(){
     let cardBox = document.createElement('div');
     cardBox.id = 'cardBox';
     let XorO = gameState.turnOrder ? gameState.playerX : gameState.playerO;
-    cardBox.className = 'border text-center border-dark container-fluid bg-gradient col-6 p-1 mt-3';
+    cardBox.className = 'border text-center border-dark container-fluid bg-warning bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `CONGRULATIONS THE ${XorO} PLAYER WON`
     htmlBody.appendChild(cardBox);
 }
@@ -342,3 +361,87 @@ function deleteBot(){
 }
 
 init(); 
+
+function turnAIOnorOff(){
+    let aiBtn = document.getElementById('aiBtn');
+    let diffBtn = document.getElementById('aiDiffBtn');
+    gameState.aiOnorOff = !gameState.aiOnorOff;
+    if(gameState.aiOnorOff){
+        aiBtn.value = "AI: On";
+        diffBtn.value = "AI: Random";
+    } else {
+        aiBtn.value = "AI: Off";
+        diffBtn.value = "AI: Off";
+    }
+}
+
+function changeDiffAI(){
+    let diffBtn = document.getElementById('aiDiffBtn');
+    if(gameState.aiOnorOff){
+        switch (diffBtn.value){
+            case 'AI: Random':
+                diffBtn.value = 'AI: Easy';
+                break;
+            case 'AI: Easy':
+                diffBtn.value = 'AI: Impossible';
+                break;
+            case 'AI: Impossible':
+                diffBtn.value = 'AI: Random';
+                break;
+        }
+        
+    }
+}
+
+function aiMove(){
+    let diffBtn = document.getElementById('aiDiffBtn');
+    switch (diffBtn.value){
+        case 'AI: Random':
+            aiRandomMove();
+            break;
+        case 'AI: Easy':
+            aiEasyMove();
+            break;
+        case 'AI: Impossible':
+            aiImpossibleMove();
+            break;
+    }
+}
+
+function aiEasyMove(){
+
+}
+
+function aiImpossibleMove(){
+
+}
+
+function aiRandomMove(){
+    let row = Math.floor(Math.random() * gameState.gridDimensions);
+    let col = Math.floor(Math.random() * gameState.gridDimensions);
+    let square = document.getElementById(`${row}${col}`);
+    let subHeader = document.getElementById('sub');
+    while(!square.classList.contains('grid')){
+        row = Math.floor(Math.random() * gameState.gridDimensions);
+        col = Math.floor(Math.random() * gameState.gridDimensions);
+        square = document.getElementById(`${row}${col}`);
+    }
+    gameState.numTurns++;
+    square.classList.remove('grid');
+    square.removeEventListener('click', squareClick);
+    square.classList.add('text-warning');
+    if(gameState.turnOrder){
+        console.log('true');
+        gameState.gridSystem[row][col].char = 'X';
+        square.innerText = 'X';
+        square.classList.add('greenTeam');
+        subHeader.innerText = `It is the ${gameState.playerO} player's turn (O)`;
+    } else {
+        gameState.gridSystem[row][col].char = 'O';
+        square.innerText = 'O';
+        square.classList.add('blueTeam');
+        subHeader.innerText = `It is the ${gameState.playerX} player's turn (X)`;
+    }
+    checkVictory(gameState.gridSystem[row][col]);
+    gameState.turnOrder = !gameState.turnOrder;
+}
