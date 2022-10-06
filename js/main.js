@@ -36,8 +36,8 @@ function init(){
 
 function createHeader(){
     let header = document.createElement('h3');
-    header.textContent = 'Tic Tac Timmy';
-    header.className = 'text-center';
+    header.textContent = 'Zic Zac Zoe';
+    header.className = 'text-center text-danger display-3';
     htmlBody.appendChild(header);
 
     let topRow = document.createElement('div');
@@ -45,13 +45,31 @@ function createHeader(){
     topRow.id = 'topRow';
     htmlBody.appendChild(topRow);
 
-    createInputForms() 
-
+    createInputForms();
+    createScoreBoard();
     let subHeader = document.createElement('p');
-    subHeader.className = 'text-center text-muted';
-    subHeader.textContent = `It is the ${gameState.playerX} players turn`;
+    subHeader.className = 'text-center text-info';
+    subHeader.textContent = `It is the ${gameState.playerX} player's turn (X)`;
     subHeader.id = 'sub';
     topRow.appendChild(subHeader);
+}
+
+function updateScoreBoard(){
+    let scoreBoard = document.getElementById('scoreBoard');
+    scoreBoard.textContent = `The score is ${gameState.playerXScore} X to ${gameState.playerOScore} O!`;
+}
+
+function createScoreBoard(){
+    let topRow = document.getElementById('topRow');
+    let scoreBoard = document.createElement('card');
+    scoreBoard.className = 'text-center border-dark text-warning display-5';
+    scoreBoard.id = 'scoreBoard';
+    topRow.appendChild(scoreBoard);
+    let scoreX = window.localStorage.getItem('playerXScore');
+    let scoreO = window.localStorage.getItem('playerOScore');
+    gameState.playerOScore = scoreO ? scoreO : 0;
+    gameState.playerXScore = scoreX ? scoreX : 0; 
+    scoreBoard.textContent = `The score is ${gameState.playerXScore} X to ${gameState.playerOScore} O!`;
 }
 function createInputForms(){
     let topRow = document.getElementById('topRow');
@@ -111,14 +129,17 @@ function squareClick(){
     gameState.numTurns++;
     square.classList.remove('grid');;
     square.removeEventListener('click', squareClick);
+    square.classList.add('text-warning');
     if(gameState.turnOrder){
         gameState.gridSystem[row][col].char = 'X';
         square.innerText = 'X';
-        subHeader.innerText = `It is the ${gameState.playerO} players turn (O)`;
+        square.classList.add('greenTeam');
+        subHeader.innerText = `It is the ${gameState.playerO} player's turn (O)`;
     } else {
         gameState.gridSystem[row][col].char = 'O';
         square.innerText = 'O';
-        subHeader.innerText = `It is the ${gameState.playerX} players turn (X)`;
+        square.classList.add('blueTeam');
+        subHeader.innerText = `It is the ${gameState.playerX} player's turn (X)`;
     }
     checkVictory(gameState.gridSystem[row][col]);
     gameState.turnOrder = !gameState.turnOrder;
@@ -131,22 +152,24 @@ function squareClick(){
 function checkVictory(square){
     checkRow(square);
     checkCol(square);
-    switch (square.gridID){
-            case '00':
-            case '22':{
-                checkTopLeftDiag(square);
-                break;
-            }
-            case '02':
-            case '20':{
-                checkTopRightDiag(square);
-                break;
-            }
-            case '11':{
-                checkTopRightDiag(square)
-                checkTopLeftDiag(square);
-                break;
-            }
+    if(!gameState.victoryBool){
+        switch (square.gridID){
+                case '00':
+                case '22':{
+                    checkTopLeftDiag(square);
+                    break;
+                }
+                case '02':
+                case '20':{
+                    checkTopRightDiag(square);
+                    break;
+                }
+                case '11':{
+                    checkTopRightDiag(square)
+                    checkTopLeftDiag(square);
+                    break;
+                }
+        }
     }
 }
 // Checks for the same row that the character is on
@@ -205,7 +228,11 @@ function checkCol(square){
 }
 // Helper function that calls for victory
 function declareVictory(){
+    gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
+    window.localStorage.setItem('playerXScore', gameState.playerXScore);
+    window.localStorage.setItem('playerOScore', gameState.playerOScore);
     victoryBox();
+    updateScoreBoard();
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
             let square = document.getElementById(`${row}${col}`)
@@ -233,7 +260,7 @@ function createBtn(){
     btnDiv.id = 'btnDiv';
     let btn = document.createElement('button');
     btn.id = 'reset';
-    btn.className = 'text-center btn btn-outline-success mt-4';
+    btn.className = 'text-center btn btn-outline-info mt-4';
     btn.innerText = 'Reset Game?';
     btn.addEventListener('click', resetBoard);
     htmlBody.appendChild(btnDiv);
@@ -263,9 +290,6 @@ function drawBox(){
 function victoryBox(){
     let cardBox = document.createElement('div');
     cardBox.id = 'cardBox';
-    gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
-    window.localStorage.setItem('playerXScore', gameState.playerXScore);
-    window.localStorage.setItem('playerOScore', gameState.playerOScore);
     let XorO = gameState.turnOrder ? gameState.playerX : gameState.playerO;
     cardBox.className = 'border text-center border-dark container-fluid bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `CONGRULATIONS THE ${XorO} PLAYER WON`
