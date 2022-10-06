@@ -1,3 +1,11 @@
 .grid:hover{
     background-color: aquamarine;
 }
+
+.redTeam{
+    background-color: red;
+}
+
+.blueTeam{
+    background-color: blue;
+}
