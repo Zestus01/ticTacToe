@@ -5,13 +5,10 @@ const gameState = {
         [],
         [],
         [],
-        [],
-        [],
-        [],
     ],
     turnOrder: 'true',
-    playerX: '',
-    playerO: '',
+    playerX: 'X',
+    playerO: 'O',
     numTurns: 0,
     victoryBool: false,
     victoryDimension: 3,
@@ -33,6 +30,8 @@ function init(){
     createHeader();
     createGrid();
     createBtn();
+    window.localStorage.getItem('player0') ? gameState.playerO = window.localStorage.getItem('playerO') : 0;
+    window.localStorage.getItem('playerX') ? gameState.playerX = window.localStorage.getItem('playerX') : 0;
 }
 
 function createHeader(){
@@ -40,12 +39,42 @@ function createHeader(){
     header.textContent = 'Tic Tac Timmy';
     header.className = 'text-center';
     htmlBody.appendChild(header);
-    
+
+    let topRow = document.createElement('div');
+    topRow.className = 'row d-flex justify-content-center text-align-center p-4';
+    topRow.id = 'topRow';
+    htmlBody.appendChild(topRow);
+
+    createInputForms() 
+
     let subHeader = document.createElement('p');
     subHeader.className = 'text-center text-muted';
-    subHeader.textContent = 'It is the X players turn';
+    subHeader.textContent = `It is the ${gameState.playerX} players turn`;
     subHeader.id = 'sub';
-    htmlBody.appendChild(subHeader);
+    topRow.appendChild(subHeader);
+}
+function createInputForms(){
+    let topRow = document.getElementById('topRow');
+
+    const inputFormX = document.createElement('input');
+    inputFormX.className = 'd-flex col-8 col-sm-4 justify-content-center text-center';
+    inputFormX.placeholder = 'Player X';
+    if(window.localStorage.getItem('playerXName') ){
+        inputFormX.value = window.localStorage.getItem('playerXName');
+        gameState.playerX = window.localStorage.getItem('playerXName');
+    }
+    inputFormX.id = 'playerXInput';
+    topRow.appendChild(inputFormX); 
+
+    const inputFormO = document.createElement('input');
+    inputFormO.className = 'd-flex col-8 col-sm-4 justify-content-center text-center';
+    inputFormO.placeholder = 'Player O';
+    if(window.localStorage.getItem('playerOName') ){
+        inputFormO.value = window.localStorage.getItem('playerOName');
+        gameState.playerO = window.localStorage.getItem('playerOName');
+    }
+    inputFormO.id = 'playerOInput';
+    topRow.appendChild(inputFormO);
 }
 
 function createGrid(){
@@ -53,19 +82,27 @@ function createGrid(){
     grid.className = 'm-2 container-fluid border border-dark d-flex justify-content-center text-center row col-12';
     grid.id = 'gridSystem';
     htmlBody.appendChild(grid);
-    createGridSquares();
+    createGridSquares()
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
             let square = document.createElement('div');
-            square.className = 'display-3 d-flex justify-content-center text-center grid border border-dark col-4 p-5';
+            square.className = 'display-3 d-flex justify-content-center text-center border border-dark col-4 p-5';
             square.id = `${row}${col}`;
+            square.textContent = gameState.gridSystem[row][col].char
             square.addEventListener('click', squareClick);
+            square.classList.add('grid');
             grid.appendChild(square);
         }
     }
 }
 
 function squareClick(){
+    let doc = document.getElementById('playerXInput').value;
+    doc ? gameState.playerX = doc.toUpperCase() : 0;
+    doc = document.getElementById('playerOInput').value 
+    doc ? gameState.playerO = doc.toUpperCase() : 0;
+    window.localStorage.setItem('playerXName', gameState.playerX);
+    window.localStorage.setItem('playerOName', gameState.playerO);
     let square = document.getElementById(this.id);
     let cords = this.id;
     let row = cords[0];
@@ -77,22 +114,20 @@ function squareClick(){
     if(gameState.turnOrder){
         gameState.gridSystem[row][col].char = 'X';
         square.innerText = 'X';
-        subHeader.innerText = 'It is the O players turn';
+        subHeader.innerText = `It is the ${gameState.playerO} players turn (O)`;
     } else {
         gameState.gridSystem[row][col].char = 'O';
         square.innerText = 'O';
-        subHeader.innerText = 'It is the X players turn';
+        subHeader.innerText = `It is the ${gameState.playerX} players turn (X)`;
     }
     checkVictory(gameState.gridSystem[row][col]);
     gameState.turnOrder = !gameState.turnOrder;
     // Draw happened
     if(gameState.numTurns === 9 && !gameState.victoryBool){
-        deleteBot();
-        createBtn();
         drawBox();
     }
 }
-  
+
 function checkVictory(square){
     checkRow(square);
     checkCol(square);
@@ -208,6 +243,7 @@ function createBtn(){
 function resetBoard(){
     if(confirm('Are you sure? Hit OK to reset')){
         document.getElementById('reset').removeEventListener('click', resetBoard);
+        window.localStorage.removeItem('gridSystem');
         deleteBot();
         createGrid();
         createBtn();
@@ -227,7 +263,10 @@ function drawBox(){
 function victoryBox(){
     let cardBox = document.createElement('div');
     cardBox.id = 'cardBox';
-    let XorO = gameState.turnOrder ? 'X' : 'O';
+    gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
+    window.localStorage.setItem('playerXScore', gameState.playerXScore);
+    window.localStorage.setItem('playerOScore', gameState.playerOScore);
+    let XorO = gameState.turnOrder ? gameState.playerX : gameState.playerO;
     cardBox.className = 'border text-center border-dark container-fluid bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `CONGRULATIONS THE ${XorO} PLAYER WON`
     htmlBody.appendChild(cardBox);
