@@ -77,7 +77,6 @@ function createScoreBoard(){
 // Create the input forms for play inpu names
 function createInputForms(){
     let topRow = document.getElementById('topRow');
-
     const inputFormX = document.createElement('input');
     inputFormX.className = 'd-flex col-8 col-sm-4 justify-content-center text-center';
     inputFormX.placeholder = 'Player X';
@@ -102,8 +101,6 @@ function createInputForms(){
 }
 // Copy and pasted from Josh's weather app
 const debounce = (func, timeout = 300) => {
-    console.log('Hello there');
-    console.log(func);
     let timer;
     return (...args) =>{
         clearTimeout(timer);
@@ -142,7 +139,6 @@ function createGrid(){
 }
 // If a grid gets clicked 
 function squareClick(){
-   
     let square = document.getElementById(this.id);
     let cords = this.id;
     let row = cords[0];
