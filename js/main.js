@@ -59,7 +59,7 @@ function createHeader(){
 // Updates the scoreboard with the new score
 function updateScoreBoard(){
     let scoreBoard = document.getElementById('scoreBoard');
-    scoreBoard.textContent = `The score is ${gameState.playerXScore} X to ${gameState.playerOScore} O!`;
+    scoreBoard.textContent = `The score is ${gameState.playerXScore} ${gameState.playerX} to ${gameState.playerOScore} ${gameState.playerO}!`;
 }
 // Creates the scoreboard section of the page
 function createScoreBoard(){
@@ -72,7 +72,7 @@ function createScoreBoard(){
     let scoreO = window.localStorage.getItem('playerOScore');
     gameState.playerOScore = scoreO ? scoreO : 0;
     gameState.playerXScore = scoreX ? scoreX : 0; 
-    scoreBoard.textContent = `The score is ${gameState.playerXScore} X to ${gameState.playerOScore} O!`;
+    updateScoreBoard();
 }
 // Create the input forms for play inpu names
 function createInputForms(){
@@ -100,7 +100,7 @@ function createInputForms(){
     inputFormO.addEventListener('keyup', debounce(inputName));
     topRow.appendChild(inputFormO);
 }
-
+// Copy and pasted from Josh's weather app
 const debounce = (func, timeout = 300) => {
     console.log('Hello there');
     console.log(func);
@@ -110,6 +110,7 @@ const debounce = (func, timeout = 300) => {
         timer = setTimeout(() => {func.apply(this, args); }, timeout);
     };
 }
+// Inputs the name into local
 function inputName(){
     let doc = document.getElementById('playerXInput').value;
     doc ? gameState.playerX = doc.toUpperCase() : 0;
