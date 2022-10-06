@@ -1,0 +1,15 @@
+.grid:hover{
+    background-color: aquamarine;
+}
+
+.greenTeam{
+    background-color: darkgreen;
+}
+
+.blueTeam{
+    background-color: navy;
+}
+
+body{
+    background-color: darkmagenta;
+}
