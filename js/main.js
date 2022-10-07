@@ -42,6 +42,7 @@ function init(){
 }
 // Creates the top section of the app
 function createHeader(){
+    // AI buttons for functionality
     let aiBtn = document.createElement('input');
     aiBtn.type = 'button';
     aiBtn.id = 'aiBtn';
@@ -74,7 +75,7 @@ function createHeader(){
     header.textContent = 'Zic Zac Zoe';
     header.className = 'text-center text-danger display-1';
     htmlBody.appendChild(header);
-
+    
     let topRow = document.createElement('div');
     topRow.className = 'row d-flex justify-content-center text-align-center p-4';
     topRow.id = 'topRow';
@@ -92,6 +93,7 @@ function createHeader(){
 function updateScoreBoard(){
     let scoreBoard = document.getElementById('scoreBoard');
     let subHeader = document.getElementById('sub');
+    // Updates the turn order sub header to players turn
     if(gameState.turnOrder){
         subHeader.innerText = `It is the ${gameState.playerX} player's turn (X)`;
     } else {
@@ -106,9 +108,11 @@ function createScoreBoard(){
     scoreBoard.className = 'text-center border-dark text-warning display-6';
     scoreBoard.id = 'scoreBoard';
     topRow.appendChild(scoreBoard);
+    // Gets the local storage
     let scoreX = window.localStorage.getItem('playerXScore');
     let scoreO = window.localStorage.getItem('playerOScore');
     let scoreDraw = window.localStorage.getItem('drawCount');
+    // If local storage is null sets to 0 otherwise set gamestate to the local storage values
     gameState.drawCount = scoreDraw ? scoreDraw : 0;
     gameState.playerOScore = scoreO ? scoreO : 0;
     gameState.playerXScore = scoreX ? scoreX : 0; 
@@ -140,6 +144,7 @@ function createInputForms(){
     topRow.appendChild(inputFormO);
 }
 // Copy and pasted from Josh's weather app
+// After a .3 seconds calls the update the  player's name
 const debounce = (func, timeout = 300) => {
     let timer;
     return (...args) =>{
@@ -187,10 +192,8 @@ function squareClick(){
     if(!gameState.victoryBool && gameState.aiOnorOff){
         aiMove();
     }
-    // if(gameState.aiOnorOff){
-    // }
 }
-
+// Function for square change
 function squareMove(square){
     let coordinates = square.id;
     let row = coordinates[0];
@@ -200,6 +203,7 @@ function squareMove(square){
     square.classList.remove('grid');
     square.removeEventListener('click', squareClick);
     square.classList.add('text-warning');
+    // Sets the squres content to
     if(gameState.turnOrder){
         gameState.gridSystem[row][col].char = 'X';
         square.innerText = 'X';
@@ -219,7 +223,7 @@ function squareMove(square){
         return;
     }
 }
-
+// function that calls the Victory condition functions
 function checkVictory(square){
     checkRow(square);
     checkCol(square);
@@ -391,6 +395,7 @@ function deleteBot(){
     if(element != null){
         element.remove();
     }
+    // Was getting double boxes after a while so deleting twice to get rid of them
     element = document.getElementById('cardBox');
     if(element != null){
         element.remove();
@@ -405,6 +410,7 @@ init();
 
 
 //ALL of Skynet related functions down here.
+// Turns Skynet on or off
 function turnAIOnorOff(){
     let aiBtn = document.getElementById('aiBtn');
     let diffBtn = document.getElementById('aiDiffBtn');
@@ -414,12 +420,13 @@ function turnAIOnorOff(){
         aiBtn.value = "Skynet: Activated";
         diffBtn.value = "Behavior: Random";
     } else {
+        gamestate.aiVersusBool = false;
         aiBtn.value = "Skynet: Off";
         diffBtn.value = "Skynet: Off";
         aiVersusBtn.value = 'Skynet VS: Off';
     }
 }
-
+// Sets the diffuculty of the AI
 function changeDiffAI(){
     let diffBtn = document.getElementById('aiDiffBtn');
     if(gameState.aiOnorOff){
@@ -436,7 +443,7 @@ function changeDiffAI(){
         }
     }
 }
-
+// Calls the appropiate AI move
 function aiMove(){
     let diffBtn = document.getElementById('aiDiffBtn');
     switch (diffBtn.value){
@@ -451,7 +458,7 @@ function aiMove(){
             break;
     }
 }
-
+// Turns the Skynet VS on or off
 function turnVSOnorOff(){
     gameState.aiVersusBool = !gameState.aiVersusBool;
     let aiVersusBtn = document.getElementById('aiVersus')
@@ -472,7 +479,8 @@ function aiEasyMove(){
     lastMove();
     moveManager();
 }
-
+// Will be made in the future
+// Need to make a check for victory function and smart move function
 function aiImpossibleMove(){
     if(gameState.numTurns === 0){
         squareMove(gameState.gridSystem[0][0])
@@ -484,14 +492,14 @@ function aiImpossibleMove(){
         checkCorners();
     }
 }
-// Checks the corners
+// Checks the corners for inputs
 function checkCorners(){
     let square = document.getElementById('00');
     if(square.textContent === ''){
 
     }
 }
-
+// Makes a random move for the ai
 function aiRandomMove(){
     if(gameState.turnOrder === 8){
         lastMove();
@@ -508,7 +516,7 @@ function aiRandomMove(){
     squareMove(square);
     moveManager();
 }
-
+// Finds the first possible move and makes it
 function lastMove(){
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
@@ -520,7 +528,7 @@ function lastMove(){
         }
     }
 }
-
+// Resets teh board after a delay and without confirmation
 function aiReset(){
     document.getElementById('reset').removeEventListener('click', resetBoard);
     deleteBot();
@@ -531,7 +539,7 @@ function aiReset(){
     gameState.victoryBool = false;
     moveManager();
 }
-
+// Manages the game for ai moves
 function moveManager(){
     if(!gameState.aiVersusBool){
         return;
