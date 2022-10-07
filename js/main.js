@@ -434,7 +434,8 @@ function changeDiffAI(){
                 diffBtn.value = 'Behavior: Easy';
                 break;
             case 'Behavior: Easy':
-                diffBtn.value = 'Behavior: Impossible';
+             //   diffBtn.value = 'Behavior: Impossible';
+                  diffBtn.value = 'Behavior: Random';
                 break;
             case 'Behavior: Impossible':
                 diffBtn.value = 'Behavior: Random';
