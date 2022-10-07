@@ -19,6 +19,8 @@ const gameState = {
     playerOScore: 0,
     aiOnorOff: false,
     aiDifficulty: 'random',
+    drawCount: 0,
+    aiVersusBool: false,
 }
 // A square of the grid
 class GridSquare{
@@ -43,16 +45,30 @@ function createHeader(){
     let aiBtn = document.createElement('input');
     aiBtn.type = 'button';
     aiBtn.id = 'aiBtn';
-    aiBtn.value = "AI: Off";
+    aiBtn.value = "Skynet: Deactivated";
     aiBtn.addEventListener('click', turnAIOnorOff);
     htmlBody.append(aiBtn);
 
     let aiDiffBtn = document.createElement('input');
     aiDiffBtn.type = 'button';
     aiDiffBtn.id = 'aiDiffBtn';
-    aiDiffBtn.value = "AI: Off";
+    aiDiffBtn.value = "Behavior: Deactivated";
     aiDiffBtn.addEventListener('click', changeDiffAI);
     htmlBody.append(aiDiffBtn);
+
+    let aiVersus = document.createElement('input');
+    aiVersus.type = 'button';
+    aiVersus.id = 'aiVersus';
+    aiVersus.value = "Skynet VS: Off";
+    aiVersus.addEventListener('click', turnVSOnorOff);
+    htmlBody.append(aiVersus);
+
+    let startMove = document.createElement('button');
+    startMove.type = 'button';
+    startMove.id = 'startMove';
+    startMove.textContent = "Start Move";
+    startMove.addEventListener('click', moveManager);
+    htmlBody.append(startMove);
 
     let header = document.createElement('h3');
     header.textContent = 'Zic Zac Zoe';
@@ -81,7 +97,7 @@ function updateScoreBoard(){
     } else {
         subHeader.innerText = `It is the ${gameState.playerO} player's turn (O)`;
     }
-    scoreBoard.textContent = `The score is ${gameState.playerXScore} ${gameState.playerX} to ${gameState.playerOScore} ${gameState.playerO}!`;
+    scoreBoard.textContent = `The score is ${gameState.playerXScore} ${gameState.playerX} to ${gameState.playerOScore} ${gameState.playerO}! There are ${gameState.drawCount} draws`;
 }
 // Creates the scoreboard section of the page
 function createScoreBoard(){
@@ -92,6 +108,8 @@ function createScoreBoard(){
     topRow.appendChild(scoreBoard);
     let scoreX = window.localStorage.getItem('playerXScore');
     let scoreO = window.localStorage.getItem('playerOScore');
+    let scoreDraw = window.localStorage.getItem('drawCount');
+    gameState.drawCount = scoreDraw ? scoreDraw : 0;
     gameState.playerOScore = scoreO ? scoreO : 0;
     gameState.playerXScore = scoreX ? scoreX : 0; 
     updateScoreBoard();
@@ -164,10 +182,6 @@ function squareClick(){
     let square = document.getElementById(this.id);
     squareMove(square)
     if(gameState.victoryBool){
-        return;
-    }
-    if(gameState.numTurns === 9 && !gameState.victoryBool){
-        drawBox();
         return;
     }
     if(!gameState.victoryBool && gameState.aiOnorOff){
@@ -335,7 +349,6 @@ function createBtn(){
 function resetBoard(){
     if(confirm('Are you sure? Hit OK to reset')){
         document.getElementById('reset').removeEventListener('click', resetBoard);
-        window.localStorage.removeItem('gridSystem');
         deleteBot();
         createGrid();
         createBtn();
@@ -347,7 +360,10 @@ function resetBoard(){
 
 // If the game ends in a draw
 function drawBox(){
+    gameState.drawCount++;
+    window.localStorage.setItem('drawCount', gameState.drawCount);
     let cardBox = document.createElement('div');
+    updateScoreBoard();
     cardBox.id = 'cardBox';
     cardBox.className = 'border text-center border-dark container-fluid bg-warning bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
@@ -368,7 +384,14 @@ function victoryBox(){
 function deleteBot(){
     let element = document.getElementById('reset');
     element.remove();
+    if(element != null){
+        element.remove();
+    }
     element = document.getElementById('gridSystem');
+    if(element != null){
+        element.remove();
+    }
+    element = document.getElementById('cardBox');
     if(element != null){
         element.remove();
     }
@@ -385,13 +408,15 @@ init();
 function turnAIOnorOff(){
     let aiBtn = document.getElementById('aiBtn');
     let diffBtn = document.getElementById('aiDiffBtn');
+    let aiVersusBtn = document.getElementById('aiVersus');
     gameState.aiOnorOff = !gameState.aiOnorOff;
     if(gameState.aiOnorOff){
-        aiBtn.value = "AI: On";
-        diffBtn.value = "AI: Random";
+        aiBtn.value = "Skynet: Activated";
+        diffBtn.value = "Behavior: Random";
     } else {
-        aiBtn.value = "AI: Off";
-        diffBtn.value = "AI: Off";
+        aiBtn.value = "Skynet: Off";
+        diffBtn.value = "Skynet: Off";
+        aiVersusBtn.value = 'Skynet VS: Off';
     }
 }
 
@@ -399,14 +424,14 @@ function changeDiffAI(){
     let diffBtn = document.getElementById('aiDiffBtn');
     if(gameState.aiOnorOff){
         switch (diffBtn.value){
-            case 'AI: Random':
-                diffBtn.value = 'AI: Easy';
+            case 'Behavior: Random':
+                diffBtn.value = 'Behavior: Easy';
                 break;
-            case 'AI: Easy':
-                diffBtn.value = 'AI: Impossible';
+            case 'Behavior: Easy':
+                diffBtn.value = 'Behavior: Impossible';
                 break;
-            case 'AI: Impossible':
-                diffBtn.value = 'AI: Random';
+            case 'Behavior: Impossible':
+                diffBtn.value = 'Behavior: Random';
                 break;
         }
     }
@@ -415,20 +440,37 @@ function changeDiffAI(){
 function aiMove(){
     let diffBtn = document.getElementById('aiDiffBtn');
     switch (diffBtn.value){
-        case 'AI: Random':
+        case 'Behavior: Random':
             aiRandomMove();
             break;
-        case 'AI: Easy':
+        case 'Behavior: Easy':
             aiEasyMove();
             break;
-        case 'AI: Impossible':
+        case 'Behavior: Impossible':
             aiImpossibleMove();
             break;
     }
 }
 
-function aiEasyMove(){
+function turnVSOnorOff(){
+    gameState.aiVersusBool = !gameState.aiVersusBool;
+    let aiVersusBtn = document.getElementById('aiVersus')
+    switch(aiVersusBtn.value){
+        case 'Skynet VS: Off':{
+            aiVersusBtn.value = 'Skynet VS: On';
+            break;
+        }
+        case 'Skynet VS: On':{
+            aiVersusBtn.value = 'Skynet VS: Off';
+            break;
+        }
+    }
+}
 
+
+function aiEasyMove(){
+    lastMove();
+    moveManager();
 }
 
 function aiImpossibleMove(){
@@ -442,7 +484,7 @@ function aiImpossibleMove(){
         checkCorners();
     }
 }
-// Checks the c
+// Checks the corners
 function checkCorners(){
     let square = document.getElementById('00');
     if(square.textContent === ''){
@@ -464,16 +506,52 @@ function aiRandomMove(){
         square = document.getElementById(`${row}${col}`);
     }
     squareMove(square);
+    moveManager();
 }
 
 function lastMove(){
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
             let square = document.getElementById(`${row}${col}`)
-            if(square.textContent === ''){
-                squareMove(square);
-                return;
+                if(square.classList.contains('grid')){
+                    squareMove(square);
+                    return;
             }
         }
     }
 }
+
+function aiReset(){
+    document.getElementById('reset').removeEventListener('click', resetBoard);
+    deleteBot();
+    createGrid();
+    createBtn();
+    updateScoreBoard();
+    gameState.numTurns = 0;
+    gameState.victoryBool = false;
+    moveManager();
+}
+
+function moveManager(){
+    if(!gameState.aiVersusBool){
+        return;
+    }
+    if(gameState.victoryBool){
+        setTimeout(() => {
+            aiReset();
+        }, 1500)
+        return;
+    }
+    if(gameState.numTurns === 9 && !gameState.victoryBool){
+        setTimeout(() => {
+            aiReset();
+        }, 1500);
+        return;
+    }
+    if(!gameState.victoryBool && gameState.aiOnorOff){
+        setTimeout(() => {
+            aiMove();
+        }, 500)
+    }
+}
+
