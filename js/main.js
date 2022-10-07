@@ -311,7 +311,6 @@ function declareVictory(){
     gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
     window.localStorage.setItem('playerXScore', gameState.playerXScore);
     window.localStorage.setItem('playerOScore', gameState.playerOScore);
-    gameState.turnOrder = !gameState.turnOrder;
     victoryBox();
     updateScoreBoard();
     for(let row = 0; row < gameState.gridDimensions; row++){
