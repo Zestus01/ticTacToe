@@ -189,7 +189,7 @@ function squareClick(){
     if(gameState.victoryBool){
         return;
     }
-    if(!gameState.victoryBool && gameState.aiOnorOff){
+    if(!gameState.victoryBool && gameState.aiOnorOff && gamestate.numTurns != 9){
         aiMove();
     }
 }
