@@ -182,10 +182,6 @@ function squareClick(){
     if(gameState.victoryBool){
         return;
     }
-    if(gameState.numTurns === 9 && !gameState.victoryBool){
-        drawBox();
-        return;
-    }
     if(!gameState.victoryBool && gameState.aiOnorOff){
         aiMove();
     }
@@ -384,7 +380,14 @@ function victoryBox(){
 function deleteBot(){
     let element = document.getElementById('reset');
     element.remove();
+    if(element != null){
+        element.remove();
+    }
     element = document.getElementById('gridSystem');
+    if(element != null){
+        element.remove();
+    }
+    element = document.getElementById('cardBox');
     if(element != null){
         element.remove();
     }
@@ -532,13 +535,13 @@ function moveManager(){
     if(gameState.victoryBool){
         setTimeout(() => {
             aiReset();
-        }, 1000)
+        }, 1500)
         return;
     }
     if(gameState.numTurns === 9 && !gameState.victoryBool){
         setTimeout(() => {
             aiReset();
-        }, 1000);
+        }, 1500);
         return;
     }
     if(!gameState.victoryBool && gameState.aiOnorOff){
