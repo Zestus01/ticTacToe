@@ -108,6 +108,8 @@ function createScoreBoard(){
     topRow.appendChild(scoreBoard);
     let scoreX = window.localStorage.getItem('playerXScore');
     let scoreO = window.localStorage.getItem('playerOScore');
+    let scoreDraw = window.localStorage.getItem('drawCount');
+    gameState.drawCount = scoreDraw ? scoreDraw : 0;
     gameState.playerOScore = scoreO ? scoreO : 0;
     gameState.playerXScore = scoreX ? scoreX : 0; 
     updateScoreBoard();
@@ -359,7 +361,9 @@ function resetBoard(){
 // If the game ends in a draw
 function drawBox(){
     gameState.drawCount++;
+    window.localStorage.setItem('drawCount', gameState.drawCount);
     let cardBox = document.createElement('div');
+    updateScoreBoard();
     cardBox.id = 'cardBox';
     cardBox.className = 'border text-center border-dark container-fluid bg-warning bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
