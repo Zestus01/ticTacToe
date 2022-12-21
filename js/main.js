@@ -642,7 +642,7 @@ function checkPossibleWinCol(mark){
         markCount = 0;
     }
 }
-
+///// THIS FUNCTION NEEDS TO BE CODED //////
 function checkPossibleWinDiag(mark){
     let markCount = 0;
     let placeholderSquare;
