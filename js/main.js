@@ -350,8 +350,7 @@ function createBtn(){
 
 // Deletes the board and remakes it, asks for confirmation first
 function resetBoard(){
-    if(confirm('Are you sure? Hit OK to reset')){
-        document.getElementById('reset').removeEventListener('click', resetBoard);
+    if(gameState.victoryBool || confirm('Are you sure? Hit OK to reset')){
         deleteBot();
         createGrid();
         createBtn();
@@ -529,21 +528,25 @@ function aiReset(){
 }
 // Manages the game for ai moves
 function moveManager(){
+    // If ai versus is on
     if(!gameState.aiVersusBool){
         return;
     }
+    // If win condition
     if(gameState.victoryBool){
         setTimeout(() => {
             aiReset();
         }, 1500)
         return;
     }
+    // If draw condition
     if(gameState.numTurns === 9 && !gameState.victoryBool){
         setTimeout(() => {
             aiReset();
         }, 1500);
         return;
     }
+    // Next turn
     if(!gameState.victoryBool && gameState.aiOnorOff){
         setTimeout(() => {
             aiMove();
@@ -554,9 +557,11 @@ function moveManager(){
 // Will be made in the future
 // Need to make a check for victory function and smart move function
 function aiImpossibleMove(){
+    // Best first move is center grid
     if(gameState.numTurns === 0){
         squareMove(gameState.gridSystem[0][0])
-    } else if(gameState.gridSystem[1][1].textContent != '' && gameState.numTurns === 1){
+    } // Second best is corner 
+    else if(gameState.gridSystem[1][1].textContent != '' && gameState.numTurns === 1){
         squareMove(gameState.gridSystem[1][1]);
     } else if(gameState.numTurns === 2){
         if(!checkPossibleLoss() || !checkPossibleWin())
