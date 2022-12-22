@@ -31,6 +31,7 @@ const gameState = {
     drawCount: 0,
     aiVersusBool: false,
     pastMoves: [],
+    AIButtonDisabled: true,
 
 }
 
@@ -317,6 +318,7 @@ function declareVictory(){
     gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
     window.localStorage.setItem('playerXScore', gameState.playerXScore);
     window.localStorage.setItem('playerOScore', gameState.playerOScore);
+    gameState.AIButtonDisabled = true;
     victoryBox();
     updateScoreBoard();
     for(let row = 0; row < gameState.gridDimensions; row++){
@@ -357,12 +359,14 @@ function createBtn(){
 // Deletes the board and remakes it, asks for confirmation first
 function resetBoard(){
     if(gameState.victoryBool || confirm('Are you sure? Hit OK to reset')){
+
         deleteBot();
         createGrid();
         createBtn();
         updateScoreBoard();
         gameState.numTurns = 0;
         gameState.victoryBool = false;
+        gameState.AIButtonDisabled = gameState.aiOnOrOff ? false : true;
     }
 }
 
@@ -377,6 +381,7 @@ function drawBox(){
     cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
     htmlBody.appendChild(cardBox);
     gameState.victoryBool = true;
+    gameState.AIButtonDisabled = true;
 }
 
 // Draws a victory box and delcares who wins
@@ -422,10 +427,12 @@ function turnAIOnOrOff(){
     let aiVersusBtn = document.getElementById('aiVersus');
     gameState.aiOnOrOff = !gameState.aiOnOrOff;
     if(gameState.aiOnOrOff){
+        gameState.AIButtonDisabled = false;
         aiBtn.value = "Skynet: Activated";
         diffBtn.value = "Behavior: Random";
         gameState.aiDifficulty = 'random'
     } else {
+        gameState.AIButtonDisabled = true;
         gameState.aiVersusBool = false;
         aiBtn.value = "Skynet: Off";
         diffBtn.value = "Skynet: Off";
@@ -454,16 +461,18 @@ function changeDiffAI(){
 }
 // Calls the appropiate AI move
 function aiMove(){
-    switch (gameState.aiDifficulty){
-        case 'random':
-            aiRandomMove();
-            break;
-        case 'easy':
-            aiEasyMove();
-            break;
-        case 'impossible':
-            aiImpossibleMove();
-            break;
+    if(!gameState.AIButtonDisabled){
+        switch (gameState.aiDifficulty){
+            case 'random':
+                aiRandomMove();
+                break;
+            case 'easy':
+                aiEasyMove();
+                break;
+            case 'impossible':
+                aiImpossibleMove();
+                break;
+        }
     }
 }
 // Turns the Skynet VS on or off
@@ -531,6 +540,7 @@ function aiReset(){
     updateScoreBoard();
     gameState.numTurns = 0;
     gameState.victoryBool = false;
+    gameState.AIButtonDisabled = false;
     moveManager();
 }
 // Manages the game for ai moves
@@ -722,11 +732,12 @@ function checkPossibleWinDiag(mark){
             placeholderSquare = document.getElementById(diagonal + "" + diagonal);
         }
         //[2,0], [1,1], [0,2]
+        console.log('[' + (2 - diagonal) + ', ' + diagonal + ']');
         if(gameState.gridSystem[(2 - diagonal)][diagonal].char === mark){
             markCountOtherWay++;
         }
         else{
-            otherSquare = document.getElementById(diagonal + "" + diagonal);
+            otherSquare = document.getElementById((2 - diagonal) + "" + diagonal);
         }
     }
     if(markCount === 2 && placeholderSquare.classList.contains('grid')){
