@@ -30,6 +30,8 @@ const gameState = {
     aiDifficulty: 'random',
     drawCount: 0,
     aiVersusBool: false,
+    pastMoves: [],
+
 }
 
 // Initializes the page
@@ -201,6 +203,7 @@ function squareMove(square){
     let col = coordinates[1];
     let subHeader = document.getElementById('sub');
     gameState['lastClicked'] = gameState.gridSystem[row][col];
+    gameState.pastMoves.push(gameState.gridSystem[row][col]);
     gameState.numTurns++;
     square.classList.remove('grid');
     square.removeEventListener('click', squareClick);
@@ -373,6 +376,7 @@ function drawBox(){
     cardBox.className = 'border text-center border-dark container-fluid bg-warning bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
     htmlBody.appendChild(cardBox);
+    gameState.victoryBool = true;
 }
 
 // Draws a victory box and delcares who wins
@@ -567,13 +571,41 @@ function aiImpossibleMove(){
     } // Second best is corner 
     else if(gameState.gridSystem[1][1].char === '' && gameState.numTurns === 1){
         squareMove(document.getElementById("11"));
+    } else if(gameState.numTurns === 2 && checkCorners()){
+            console.log('checkCorners');
     } else if(gameState.numTurns === 2){
-        checkCorners()
-    } else {
-        checkPossibleWinThenLoss();
+        console.log('turn 3 oppo')
+        oppositeLastClicked();
+    } 
+    else {
+        if(checkPossibleWinThenLoss()){
+            console.log('possible win then loss')
+        } else{
+            console.log('random thought');
+            aiRandomMove();
+        }
     }
     moveManager();
 }
+// Does the move opposite the lastClciked on the grid
+function oppositeLastClicked(){
+    let firstMove = gameState.pastMoves[0];
+    let newRow, newCol;
+    console.log(firstMove);
+    if(firstMove.row){
+        newRow = 0;
+    } else {
+        newRow = 2;
+    }
+    if(firstMove.col){
+        newCol = 0;
+    } else {
+        newCol = 2;
+    }
+    squareMove(document.getElementById(newRow + '' + newCol));
+    return true;
+}
+
 // Checks the corners for inputs
 // 00 02 20 22
 function checkCorners(){
@@ -607,26 +639,32 @@ function checkPossibleWinThenLoss(){
     let mark = gameState.turnOrder ? 'X' : 'O';
     console.log("Mark: ",  mark);
     if(checkPossibleWinDiag(mark)){
+        console.log('winDig: ', mark)
         return true;
     }
     if(checkPossibleWinCol(mark)){
+        console.log('winCol: ', mark)
         return true;
     }
     if(checkPossibleWinRow(mark)){
+        console.log('winRow: ', mark)
         return true;
     }
     mark = (mark === 'X') ? 'O' : 'X';
     console.log("Mark2: ", mark);
     if(checkPossibleWinDiag(mark)){
+        console.log('winDiag: ', mark)
         return true;
     }
     if(checkPossibleWinCol(mark)){
+        console.log('winCol: ', mark)
         return true;
     }
     if(checkPossibleWinRow(mark)){
+        console.log('winRow: ', mark)
         return true;
     }
-
+    console.log('nothing');
     return false;
 }
 function checkPossibleWinRow(mark){
@@ -642,6 +680,7 @@ function checkPossibleWinRow(mark){
             }
         }
         if(markCount === 2 && placeholderSquare.classList.contains('grid')){
+            console.log('winRow: ', placeholderSquare);
             squareMove(placeholderSquare);
             return true;
         }
@@ -662,6 +701,7 @@ function checkPossibleWinCol(mark){
             }
         }
         if(markCount === 2 && placeholderSquare.classList.contains('grid')){
+            console.log('winCol: ', placeholderSquare);
             squareMove(placeholderSquare);
             return true;
         }
@@ -689,12 +729,13 @@ function checkPossibleWinDiag(mark){
             otherSquare = document.getElementById(diagonal + "" + diagonal);
         }
     }
-    console.log("Diag: " + markCount + ' :Diag otherway: ' + markCountOtherWay);
     if(markCount === 2 && placeholderSquare.classList.contains('grid')){
+        console.log('winDig: ', placeholderSquare);
         squareMove(placeholderSquare);
         return true;
     }
     if(markCountOtherWay === 2 && otherSquare.classList.contains('grid')){
+        console.log('otherDiag: ', otherSquare);
         squareMove(otherSquare);
         return true;
     }
