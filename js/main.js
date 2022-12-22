@@ -68,7 +68,7 @@ function createHeader(){
     startMove.type = 'button';
     startMove.id = 'startMove';
     startMove.textContent = "Start Move";
-    startMove.addEventListener('click', moveManager);
+    startMove.addEventListener('click', aiMove);
     htmlBody.append(startMove);
 
     let header = document.createElement('h3');
@@ -195,6 +195,7 @@ function squareClick(){
 }
 // Function for square change
 function squareMove(square){
+    console.log(square);
     let coordinates = square.id;
     let row = coordinates[0];
     let col = coordinates[1];
@@ -531,6 +532,7 @@ function aiReset(){
 // Manages the game for ai moves
 function moveManager(){
     // If ai versus is on
+
     if(!gameState.aiVersusBool){
         return;
     }
@@ -563,7 +565,7 @@ function aiImpossibleMove(){
     if(gameState.numTurns === 0){
         squareMove(document.getElementById("00"));
     } // Second best is corner 
-    else if(gameState.gridSystem[1][1].textContent != '' && gameState.numTurns === 1){
+    else if(gameState.gridSystem[1][1].char === '' && gameState.numTurns === 1){
         squareMove(document.getElementById("11"));
     } else if(gameState.numTurns === 2){
         checkCorners()
@@ -592,6 +594,10 @@ function checkCorners(){
             squareMove(document.getElementById("22"));
             return true;
         }
+        default:{
+            checkPossibleWinThenLoss();
+            break;
+        }
     }
     return false;
 }
@@ -599,6 +605,7 @@ function checkCorners(){
 // X is true, O is false
 function checkPossibleWinThenLoss(){
     let mark = gameState.turnOrder ? 'X' : 'O';
+    console.log("Mark: ",  mark);
     if(checkPossibleWinDiag(mark)){
         return true;
     }
@@ -609,6 +616,7 @@ function checkPossibleWinThenLoss(){
         return true;
     }
     mark = (mark === 'X') ? 'O' : 'X';
+    console.log("Mark2: ", mark);
     if(checkPossibleWinDiag(mark)){
         return true;
     }
@@ -625,7 +633,7 @@ function checkPossibleWinRow(mark){
     let markCount = 0;
     let placeholderSquare;
     for(let r = 0; r < gameState.gridDimensions; r++){
-        for(let c = 0; r < gameState.gridDimensions; c++){
+        for(let c = 0; c < gameState.gridDimensions; c++){
             if(gameState.gridSystem[r][c].char === mark){
                 markCount++;
             }
@@ -633,7 +641,7 @@ function checkPossibleWinRow(mark){
                 placeholderSquare = document.getElementById(r + "" + c);
             }
         }
-        if(markCount === 2){
+        if(markCount === 2 && placeholderSquare.classList.contains('grid')){
             squareMove(placeholderSquare);
             return true;
         }
@@ -653,7 +661,7 @@ function checkPossibleWinCol(mark){
                 placeholderSquare = document.getElementById(r + ""+ c);
             }
         }
-        if(markCount === 2){
+        if(markCount === 2 && placeholderSquare.classList.contains('grid')){
             squareMove(placeholderSquare);
             return true;
         }
@@ -662,7 +670,7 @@ function checkPossibleWinCol(mark){
 }
 // Checks diagonals. 
 function checkPossibleWinDiag(mark){
-    let markCount, markCountOtherWay = 0;
+    let markCount = 0, markCountOtherWay = 0;
     let placeholderSquare, otherSquare;
 
     for(let diagonal = 0; diagonal < gameState.gridDimensions; diagonal++){
@@ -681,11 +689,12 @@ function checkPossibleWinDiag(mark){
             otherSquare = document.getElementById(diagonal + "" + diagonal);
         }
     }
-    if(markCount === 2){
+    console.log("Diag: " + markCount + ' :Diag otherway: ' + markCountOtherWay);
+    if(markCount === 2 && placeholderSquare.classList.contains('grid')){
         squareMove(placeholderSquare);
         return true;
     }
-    if(markCountOtherWay === 2){
+    if(markCountOtherWay === 2 && otherSquare.classList.contains('grid')){
         squareMove(otherSquare);
         return true;
     }
@@ -697,6 +706,10 @@ function checkValidSquare(row, col){
         return false;
     }
     if(col < 0 || col >= gameState.gridDimensions){
+        return false;
+    }
+    let square = document.getElementById(row + '' + col)
+    if(!square.classList.contains('grid')){
         return false;
     }
     return true; 
