@@ -198,7 +198,6 @@ function squareClick(){
 }
 // Function for square change
 function squareMove(square){
-    console.log(square);
     let coordinates = square.id;
     let row = coordinates[0];
     let col = coordinates[1];
@@ -364,10 +363,15 @@ function resetBoard(){
         createGrid();
         createBtn();
         updateScoreBoard();
-        gameState.numTurns = 0;
-        gameState.victoryBool = false;
-        gameState.AIButtonDisabled = gameState.aiOnOrOff ? false : true;
+        resetGameState();
     }
+}
+
+function resetGameState(){
+    gameState.numTurns = 0;
+    gameState.victoryBool = false;
+    gameState.AIButtonDisabled = gameState.aiOnOrOff ? false : true;
+    gameState.pastMoves = [];
 }
 
 // If the game ends in a draw
@@ -538,9 +542,7 @@ function aiReset(){
     createGrid();
     createBtn();
     updateScoreBoard();
-    gameState.numTurns = 0;
-    gameState.victoryBool = false;
-    gameState.AIButtonDisabled = false;
+    resetGameState();
     moveManager();
 }
 // Manages the game for ai moves
@@ -582,16 +584,12 @@ function aiHardMove(){
     else if(gameState.gridSystem[1][1].char === '' && gameState.numTurns === 1){
         squareMove(document.getElementById("11"));
     } else if(gameState.numTurns === 2 && checkCorners()){
-            console.log('checkCorners');
     } else if(gameState.numTurns === 2){
-        console.log('turn 3 oppo')
         oppositeLastClicked();
     } 
     else {
         if(checkPossibleWinThenLoss()){
-            console.log('possible win then loss')
         } else{
-            console.log('random thought');
             aiRandomMove();
         }
     }
@@ -601,7 +599,6 @@ function aiHardMove(){
 function oppositeLastClicked(){
     let firstMove = gameState.pastMoves[0];
     let newRow, newCol;
-    console.log(firstMove);
     if(firstMove.row){
         newRow = 0;
     } else {
@@ -647,34 +644,25 @@ function checkCorners(){
 // X is true, O is false
 function checkPossibleWinThenLoss(){
     let mark = gameState.turnOrder ? 'X' : 'O';
-    console.log("Mark: ",  mark);
     if(checkPossibleWinDiag(mark)){
-        console.log('winDig: ', mark)
         return true;
     }
     if(checkPossibleWinCol(mark)){
-        console.log('winCol: ', mark)
         return true;
     }
     if(checkPossibleWinRow(mark)){
-        console.log('winRow: ', mark)
         return true;
     }
     mark = (mark === 'X') ? 'O' : 'X';
-    console.log("Mark2: ", mark);
     if(checkPossibleWinDiag(mark)){
-        console.log('winDiag: ', mark)
         return true;
     }
     if(checkPossibleWinCol(mark)){
-        console.log('winCol: ', mark)
         return true;
     }
     if(checkPossibleWinRow(mark)){
-        console.log('winRow: ', mark)
         return true;
     }
-    console.log('nothing');
     return false;
 }
 function checkPossibleWinRow(mark){
@@ -690,7 +678,6 @@ function checkPossibleWinRow(mark){
             }
         }
         if(markCount === 2 && placeholderSquare.classList.contains('grid')){
-            console.log('winRow: ', placeholderSquare);
             squareMove(placeholderSquare);
             return true;
         }
@@ -711,7 +698,6 @@ function checkPossibleWinCol(mark){
             }
         }
         if(markCount === 2 && placeholderSquare.classList.contains('grid')){
-            console.log('winCol: ', placeholderSquare);
             squareMove(placeholderSquare);
             return true;
         }
@@ -740,12 +726,10 @@ function checkPossibleWinDiag(mark){
         }
     }
     if(markCount === 2 && placeholderSquare.classList.contains('grid')){
-        console.log('winDig: ', placeholderSquare);
         squareMove(placeholderSquare);
         return true;
     }
     if(markCountOtherWay === 2 && otherSquare.classList.contains('grid')){
-        console.log('otherDiag: ', otherSquare);
         squareMove(otherSquare);
         return true;
     }
