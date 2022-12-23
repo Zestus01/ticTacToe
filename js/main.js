@@ -1,27 +1,5 @@
 let htmlBody = document.getElementById('app');
 
-const gameState = {
-    gridSystem: [
-        [],
-        [],
-        [],
-    ],
-    // True for X, False for O
-    turnOrder: 'true',
-    playerX: 'X',
-    playerO: 'O',
-    numTurns: 0,
-    // Whether or not a victory has commenced
-    victoryBool: false,
-    victoryDimension: 3,
-    gridDimensions: 3,
-    playerXScore: 0,
-    playerOScore: 0,
-    aiOnorOff: false,
-    aiDifficulty: 'random',
-    drawCount: 0,
-    aiVersusBool: false,
-}
 // A square of the grid
 class GridSquare{
     constructor(cordX, cordY){
@@ -31,8 +9,33 @@ class GridSquare{
         this.gridID = `${cordX}${cordY}`;
     }
 }
+const gameState = {
+    gridSystem: [
+        [],
+        [],
+        [],
+    ],
+    // True for X, False for O
+    turnOrder: true,
+    playerX: 'X',
+    playerO: 'O',
+    numTurns: 0,
+    // Whether or not a victory has commenced
+    victoryBool: false,
+    victoryDimension: 3,
+    gridDimensions: 3,
+    playerXScore: 0,
+    playerOScore: 0,
+    aiOnOrOff: false,
+    aiDifficulty: 'random',
+    drawCount: 0,
+    aiVersusBool: false,
+    pastMoves: [],
+    AIButtonDisabled: true,
 
-// Intitializes the page
+}
+
+// Initializes the page
 function init(){
     createHeader();
     createGrid();
@@ -47,7 +50,7 @@ function createHeader(){
     aiBtn.type = 'button';
     aiBtn.id = 'aiBtn';
     aiBtn.value = "Skynet: Deactivated";
-    aiBtn.addEventListener('click', turnAIOnorOff);
+    aiBtn.addEventListener('click', turnAIOnOrOff);
     htmlBody.append(aiBtn);
 
     let aiDiffBtn = document.createElement('input');
@@ -68,7 +71,7 @@ function createHeader(){
     startMove.type = 'button';
     startMove.id = 'startMove';
     startMove.textContent = "Start Move";
-    startMove.addEventListener('click', moveManager);
+    startMove.addEventListener('click', aiMove);
     htmlBody.append(startMove);
 
     let header = document.createElement('h3');
@@ -173,7 +176,7 @@ function createGrid(){
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
             let square = document.createElement('div');
-            square.className = 'display-3 d-flex justify-content-center text-center border border-dark col-4 p-5';
+            square.className = 'display-3 d-flex justify-content-center text-center border border-dark col-4 py-5 ';
             square.id = `${row}${col}`;
             square.textContent = gameState.gridSystem[row][col].char
             square.addEventListener('click', squareClick);
@@ -189,7 +192,7 @@ function squareClick(){
     if(gameState.victoryBool){
         return;
     }
-    if(!gameState.victoryBool && gameState.aiOnorOff && gameState.numTurns != 9){
+    if(!gameState.victoryBool && gameState.aiOnOrOff && gameState.numTurns != 9){
         aiMove();
     }
 }
@@ -199,11 +202,13 @@ function squareMove(square){
     let row = coordinates[0];
     let col = coordinates[1];
     let subHeader = document.getElementById('sub');
+    gameState['lastClicked'] = gameState.gridSystem[row][col];
+    gameState.pastMoves.push(gameState.gridSystem[row][col]);
     gameState.numTurns++;
     square.classList.remove('grid');
     square.removeEventListener('click', squareClick);
     square.classList.add('text-warning');
-    // Sets the squres content to
+    // X true, O false
     if(gameState.turnOrder){
         gameState.gridSystem[row][col].char = 'X';
         square.innerText = 'X';
@@ -222,6 +227,7 @@ function squareMove(square){
         drawBox();
         return;
     }
+    return;
 }
 // function that calls the Victory condition functions
 function checkVictory(square){
@@ -311,6 +317,7 @@ function declareVictory(){
     gameState.turnOrder ? gameState.playerXScore++ : gameState.playerOScore++;
     window.localStorage.setItem('playerXScore', gameState.playerXScore);
     window.localStorage.setItem('playerOScore', gameState.playerOScore);
+    gameState.AIButtonDisabled = true;
     victoryBox();
     updateScoreBoard();
     for(let row = 0; row < gameState.gridDimensions; row++){
@@ -350,15 +357,21 @@ function createBtn(){
 
 // Deletes the board and remakes it, asks for confirmation first
 function resetBoard(){
-    if(confirm('Are you sure? Hit OK to reset')){
-        document.getElementById('reset').removeEventListener('click', resetBoard);
+    if(gameState.victoryBool || confirm('Are you sure? Hit OK to reset')){
+
         deleteBot();
         createGrid();
         createBtn();
         updateScoreBoard();
-        gameState.numTurns = 0;
-        gameState.victoryBool = false;
+        resetGameState();
     }
+}
+
+function resetGameState(){
+    gameState.numTurns = 0;
+    gameState.victoryBool = false;
+    gameState.AIButtonDisabled = gameState.aiOnOrOff ? false : true;
+    gameState.pastMoves = [];
 }
 
 // If the game ends in a draw
@@ -371,6 +384,8 @@ function drawBox(){
     cardBox.className = 'border text-center border-dark container-fluid bg-warning bg-gradient col-6 p-1 mt-3';
     cardBox.innerText = `AWW SHUCKS NO ONE WON! PLAY AGAIN?`
     htmlBody.appendChild(cardBox);
+    gameState.victoryBool = true;
+    gameState.AIButtonDisabled = true;
 }
 
 // Draws a victory box and delcares who wins
@@ -410,16 +425,19 @@ init();
 
 //ALL of Skynet related functions down here.
 // Turns Skynet on or off
-function turnAIOnorOff(){
+function turnAIOnOrOff(){
     let aiBtn = document.getElementById('aiBtn');
     let diffBtn = document.getElementById('aiDiffBtn');
     let aiVersusBtn = document.getElementById('aiVersus');
-    gameState.aiOnorOff = !gameState.aiOnorOff;
-    if(gameState.aiOnorOff){
+    gameState.aiOnOrOff = !gameState.aiOnOrOff;
+    if(gameState.aiOnOrOff){
+        gameState.AIButtonDisabled = false;
         aiBtn.value = "Skynet: Activated";
         diffBtn.value = "Behavior: Random";
+        gameState.aiDifficulty = 'random'
     } else {
-        gamestate.aiVersusBool = false;
+        gameState.AIButtonDisabled = true;
+        gameState.aiVersusBool = false;
         aiBtn.value = "Skynet: Off";
         diffBtn.value = "Skynet: Off";
         aiVersusBtn.value = 'Skynet VS: Off';
@@ -428,16 +446,18 @@ function turnAIOnorOff(){
 // Sets the diffuculty of the AI
 function changeDiffAI(){
     let diffBtn = document.getElementById('aiDiffBtn');
-    if(gameState.aiOnorOff){
+    if(gameState.aiOnOrOff){
         switch (diffBtn.value){
             case 'Behavior: Random':
                 diffBtn.value = 'Behavior: Easy';
+                gameState.aiDifficulty = 'easy'
                 break;
             case 'Behavior: Easy':
-             //   diffBtn.value = 'Behavior: Impossible';
-                  diffBtn.value = 'Behavior: Random';
+                gameState.aiDifficulty = 'hard'
+                diffBtn.value = 'Behavior: Hard';
                 break;
-            case 'Behavior: Impossible':
+            case 'Behavior: Hard':
+                gameState.aiDifficulty = 'random'
                 diffBtn.value = 'Behavior: Random';
                 break;
         }
@@ -445,32 +465,39 @@ function changeDiffAI(){
 }
 // Calls the appropiate AI move
 function aiMove(){
-    let diffBtn = document.getElementById('aiDiffBtn');
-    switch (diffBtn.value){
-        case 'Behavior: Random':
-            aiRandomMove();
-            break;
-        case 'Behavior: Easy':
-            aiEasyMove();
-            break;
-        case 'Behavior: Impossible':
-            aiImpossibleMove();
-            break;
+    if(!gameState.AIButtonDisabled){
+        switch (gameState.aiDifficulty){
+            case 'random':
+                aiRandomMove();
+                break;
+            case 'easy':
+                aiEasyMove();
+                break;
+            case 'hard':
+                aiHardMove();
+                break;
+        }
     }
 }
 // Turns the Skynet VS on or off
 function turnVSOnorOff(){
     gameState.aiVersusBool = !gameState.aiVersusBool;
     let aiVersusBtn = document.getElementById('aiVersus')
-    switch(aiVersusBtn.value){
-        case 'Skynet VS: Off':{
-            aiVersusBtn.value = 'Skynet VS: On';
-            break;
+    // IF AI is on
+    if(gameState.aiOnOrOff){
+        switch(aiVersusBtn.value){
+            case 'Skynet VS: Off':{
+                aiVersusBtn.value = 'Skynet VS: On';
+                break;
+            }
+            case 'Skynet VS: On':{
+                aiVersusBtn.value = 'Skynet VS: Off';
+                break;
+            }
         }
-        case 'Skynet VS: On':{
-            aiVersusBtn.value = 'Skynet VS: Off';
-            break;
-        }
+    } else {
+        aiVersusBtn.value = 'Skynet VS: Off';
+        gameState.aiVersusBool = false;
     }
 }
 
@@ -478,26 +505,6 @@ function turnVSOnorOff(){
 function aiEasyMove(){
     lastMove();
     moveManager();
-}
-// Will be made in the future
-// Need to make a check for victory function and smart move function
-function aiImpossibleMove(){
-    if(gameState.numTurns === 0){
-        squareMove(gameState.gridSystem[0][0])
-        return;
-    } else if(gameState.gridSystem[1][1].textContent != ''){
-        squareMove(gameState.gridSystem[1][1]);
-        return;
-    } else {
-        checkCorners();
-    }
-}
-// Checks the corners for inputs
-function checkCorners(){
-    let square = document.getElementById('00');
-    if(square.textContent === ''){
-
-    }
 }
 // Makes a random move for the ai
 function aiRandomMove(){
@@ -516,7 +523,7 @@ function aiRandomMove(){
     squareMove(square);
     moveManager();
 }
-// Finds the first possible move and makes it
+// Finds the first possible move and makes it. Misnomer.
 function lastMove(){
     for(let row = 0; row < gameState.gridDimensions; row++){
         for(let col = 0; col < gameState.gridDimensions; col++){
@@ -528,38 +535,217 @@ function lastMove(){
         }
     }
 }
-// Resets teh board after a delay and without confirmation
+// Resets the board after a delay and without confirmation
 function aiReset(){
-    document.getElementById('reset').removeEventListener('click', resetBoard);
+    document.getElementById('reset').removeEventListener('click', resetBoard); // Caused errors if the event listener is still on.
     deleteBot();
     createGrid();
     createBtn();
     updateScoreBoard();
-    gameState.numTurns = 0;
-    gameState.victoryBool = false;
+    resetGameState();
     moveManager();
 }
 // Manages the game for ai moves
 function moveManager(){
+    // If ai versus is on
+
     if(!gameState.aiVersusBool){
         return;
     }
+    // If win condition
     if(gameState.victoryBool){
         setTimeout(() => {
             aiReset();
         }, 1500)
         return;
     }
+    // If draw condition
     if(gameState.numTurns === 9 && !gameState.victoryBool){
         setTimeout(() => {
             aiReset();
         }, 1500);
         return;
     }
-    if(!gameState.victoryBool && gameState.aiOnorOff){
+    // Next turn
+    if(!gameState.victoryBool && gameState.aiOnOrOff){
         setTimeout(() => {
             aiMove();
         }, 500)
     }
 }
 
+// Will be made in the future
+// Need to make a check for victory function and smart move function
+function aiHardMove(){
+    // Best first move is center grid
+    if(gameState.numTurns === 0){
+        squareMove(document.getElementById("00"));
+    } // Second best is corner 
+    else if(gameState.gridSystem[1][1].char === '' && gameState.numTurns === 1){
+        squareMove(document.getElementById("11"));
+    } else if(gameState.numTurns === 2 && checkCorners()){
+    } else if(gameState.numTurns === 2){
+        oppositeLastClicked();
+    } 
+    else {
+        if(checkPossibleWinThenLoss()){
+        } else{
+            aiRandomMove();
+        }
+    }
+    moveManager();
+}
+// Does the move opposite the lastClciked on the grid
+function oppositeLastClicked(){
+    let firstMove = gameState.pastMoves[0];
+    let newRow, newCol;
+    if(firstMove.row){
+        newRow = 0;
+    } else {
+        newRow = 2;
+    }
+    if(firstMove.col){
+        newCol = 0;
+    } else {
+        newCol = 2;
+    }
+    squareMove(document.getElementById(newRow + '' + newCol));
+    return true;
+}
+
+// Checks the corners for inputs
+// 00 02 20 22
+function checkCorners(){
+    switch (gameState.lastClicked.gridID) {
+        case "00":{
+                squareMove(document.getElementById("02"));
+                return true;
+        }
+        case "22":{
+            squareMove(document.getElementById("20"));
+            return true;
+        }
+        case "02":{
+            squareMove(document.getElementById("00"));
+            return true;
+        }
+        case "20":{
+            squareMove(document.getElementById("22"));
+            return true;
+        }
+        default:{
+            checkPossibleWinThenLoss();
+            break;
+        }
+    }
+    return false;
+}
+
+// X is true, O is false
+function checkPossibleWinThenLoss(){
+    let mark = gameState.turnOrder ? 'X' : 'O';
+    if(checkPossibleWinDiag(mark)){
+        return true;
+    }
+    if(checkPossibleWinCol(mark)){
+        return true;
+    }
+    if(checkPossibleWinRow(mark)){
+        return true;
+    }
+    mark = (mark === 'X') ? 'O' : 'X';
+    if(checkPossibleWinDiag(mark)){
+        return true;
+    }
+    if(checkPossibleWinCol(mark)){
+        return true;
+    }
+    if(checkPossibleWinRow(mark)){
+        return true;
+    }
+    return false;
+}
+function checkPossibleWinRow(mark){
+    let markCount = 0;
+    let placeholderSquare;
+    for(let r = 0; r < gameState.gridDimensions; r++){
+        for(let c = 0; c < gameState.gridDimensions; c++){
+            if(gameState.gridSystem[r][c].char === mark){
+                markCount++;
+            }
+            else {
+                placeholderSquare = document.getElementById(r + "" + c);
+            }
+        }
+        if(markCount === 2 && placeholderSquare.classList.contains('grid')){
+            squareMove(placeholderSquare);
+            return true;
+        }
+        markCount = 0;
+    }
+}
+
+function checkPossibleWinCol(mark){
+    let markCount = 0;
+    let placeholderSquare;
+    for(let c = 0; c < gameState.gridDimensions; c++){
+        for(let r = 0; r < gameState.gridDimensions; r++){
+            if(gameState.gridSystem[r][c].char === mark){
+                markCount++;
+            }
+            else {
+                placeholderSquare = document.getElementById(r + ""+ c);
+            }
+        }
+        if(markCount === 2 && placeholderSquare.classList.contains('grid')){
+            squareMove(placeholderSquare);
+            return true;
+        }
+        markCount = 0;
+    }
+}
+// Checks diagonals. 
+function checkPossibleWinDiag(mark){
+    let markCount = 0, markCountOtherWay = 0;
+    let placeholderSquare, otherSquare;
+
+    for(let diagonal = 0; diagonal < gameState.gridDimensions; diagonal++){
+        // [0,0], [1,1], [2,2]
+        if(gameState.gridSystem[diagonal][diagonal].char === mark){
+            markCount++;
+        }
+        else {
+            placeholderSquare = document.getElementById(diagonal + "" + diagonal);
+        }
+        //[2,0], [1,1], [0,2]
+        if(gameState.gridSystem[(2 - diagonal)][diagonal].char === mark){
+            markCountOtherWay++;
+        }
+        else{
+            otherSquare = document.getElementById((2 - diagonal) + "" + diagonal);
+        }
+    }
+    if(markCount === 2 && placeholderSquare.classList.contains('grid')){
+        squareMove(placeholderSquare);
+        return true;
+    }
+    if(markCountOtherWay === 2 && otherSquare.classList.contains('grid')){
+        squareMove(otherSquare);
+        return true;
+    }
+}
+
+// Function that could be used for shorthanded grid checks.
+function checkValidSquare(row, col){
+    if(row < 0 || row >= gameState.gridDimensions){
+        return false;
+    }
+    if(col < 0 || col >= gameState.gridDimensions){
+        return false;
+    }
+    let square = document.getElementById(row + '' + col)
+    if(!square.classList.contains('grid')){
+        return false;
+    }
+    return true; 
+}
