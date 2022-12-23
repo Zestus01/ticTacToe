@@ -449,10 +449,10 @@ function changeDiffAI(){
                 gameState.aiDifficulty = 'easy'
                 break;
             case 'Behavior: Easy':
-                gameState.aiDifficulty = 'impossible'
-                diffBtn.value = 'Behavior: Impossible';
+                gameState.aiDifficulty = 'hard'
+                diffBtn.value = 'Behavior: Hard';
                 break;
-            case 'Behavior: Impossible':
+            case 'Behavior: Hard':
                 gameState.aiDifficulty = 'random'
                 diffBtn.value = 'Behavior: Random';
                 break;
@@ -469,8 +469,8 @@ function aiMove(){
             case 'easy':
                 aiEasyMove();
                 break;
-            case 'impossible':
-                aiImpossibleMove();
+            case 'hard':
+                aiHardMove();
                 break;
         }
     }
@@ -574,7 +574,7 @@ function moveManager(){
 
 // Will be made in the future
 // Need to make a check for victory function and smart move function
-function aiImpossibleMove(){
+function aiHardMove(){
     // Best first move is center grid
     if(gameState.numTurns === 0){
         squareMove(document.getElementById("00"));
@@ -732,7 +732,6 @@ function checkPossibleWinDiag(mark){
             placeholderSquare = document.getElementById(diagonal + "" + diagonal);
         }
         //[2,0], [1,1], [0,2]
-        console.log('[' + (2 - diagonal) + ', ' + diagonal + ']');
         if(gameState.gridSystem[(2 - diagonal)][diagonal].char === mark){
             markCountOtherWay++;
         }
